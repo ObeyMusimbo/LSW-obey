@@ -18,8 +18,10 @@
             "instagram",
             "facebook"
           ],
-          "caption_mode": "auto",
-          "custom_captions": [],
+          "caption_mode": "custom",
+          "custom_captions": [
+            "test"
+          ],
           "custom_tags": [
             "#kitchendesign",
             "#kitchenrenovation",
