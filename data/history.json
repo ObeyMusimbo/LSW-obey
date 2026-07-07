@@ -1,3 +1,9 @@
-{
-  "posts": []
-}
+[
+  {
+    "timestamp": "2026-07-07T15:17:00+00:00",
+    "topic": "a common customer question, answered",
+    "results": {
+      "facebook": "ok:1335681619620994_122107315077379104"
+    }
+  }
+]
