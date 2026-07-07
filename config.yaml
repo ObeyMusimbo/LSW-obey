@@ -1,0 +1,33 @@
+# Business profile used to generate posts. Edit everything in this file.
+
+business:
+  name: "Leshaw"
+  description: >
+    A great local business.
+  website: ""
+  tone: "friendly, professional, confident"
+  audience: "local customers and businesses"
+  call_to_action: "Visit us or send us a message to learn more."
+
+topics:
+  - "what makes our products and service stand out"
+  - "a look at our latest work"
+  - "why quality matters and saves money long term"
+  - "a common customer question, answered"
+
+hashtags:
+  - "#Leshaw"
+  - "#local"
+  - "#quality"
+
+# Public image URLs for the standard post rotation (fill in later).
+image_urls: []
+
+template_posts:
+  - >
+    Leshaw: quality you can rely on. Visit us or send a message to learn more.
+
+# Captions used for automatic campaign posting.
+captions:
+  contact_phone: ""
+  contact_url: ""

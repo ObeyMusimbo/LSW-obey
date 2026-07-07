@@ -1,0 +1,2886 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Posts Automation</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --panel2: #f3f5f8;
+    --line: #e5e8ee;
+    --line-strong: #d3d8e0;
+    --text: #101827;
+    --muted: #667085;
+    --accent: #4f46e5;
+    --accent-dim: #4338ca;
+    --accent-soft: #eef0fe;
+    --ok: #15a34a;
+    --ok-soft: #e7f6ee;
+    --err: #dc2626;
+    --err-soft: #fdecec;
+    --shadow: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
+    --shadow-lg: 0 12px 32px rgba(16,24,40,.14);
+    --radius: 12px;
+    --navw: 224px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ---- Left navigation ---- */
+  aside {
+    width: var(--navw); flex: 0 0 var(--navw); background: var(--panel);
+    border-right: 1px solid var(--line); padding: 18px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  aside .logo { font-size: 16px; font-weight: 700; padding: 4px 10px 2px;
+    letter-spacing: -.2px; }
+  aside .logosub { color: var(--muted); font-size: 12px; padding: 0 10px 10px; }
+  aside .chip {
+    margin: 4px 10px 10px; padding: 9px 11px; border: 1px solid var(--line);
+    border-radius: 10px; background: var(--panel2); font-size: 11px;
+    color: var(--muted); overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  aside .chip b { color: var(--text); display: block; font-size: 13px;
+    overflow: hidden; text-overflow: ellipsis; }
+  aside .navgroup { color: var(--muted); font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; padding: 12px 12px 4px; }
+  aside a.nav {
+    display: block; padding: 9px 12px; border-radius: 9px; color: var(--muted);
+    text-decoration: none; font-size: 14px; font-weight: 500;
+    transition: background .12s, color .12s;
+  }
+  aside a.nav:hover { background: var(--panel2); color: var(--text); }
+  aside a.nav.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  aside .navfoot { margin-top: auto; color: var(--muted); font-size: 11px;
+    padding: 12px 10px 0; border-top: 1px solid var(--line); }
+
+  .content { flex: 1; min-width: 0; }
+  header {
+    padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 19px; margin: 0; letter-spacing: -.3px; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header .menu-btn { display: none; margin-left: auto; }
+  main { max-width: 1020px; margin: 0 auto; padding: 24px 20px 64px; }
+
+  .view { display: none; }
+  .view.active { display: block; animation: fade .18s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  section {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px;
+       color: var(--muted); margin: 0 0 12px; font-weight: 700; }
+  h3 { font-size: 15px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 4px; font-weight: 500; }
+  input[type=text], input[type=password], input[type=date], input[type=time],
+  input[type=number], textarea, select {
+    width: 100%; background: var(--panel); border: 1px solid var(--line-strong);
+    color: var(--text); padding: 9px 11px; border-radius: 9px; font-size: 14px;
+    font-family: inherit; transition: border-color .12s, box-shadow .12s;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 180px; }
+  button {
+    background: var(--accent); color: #ffffff; border: none; cursor: pointer;
+    padding: 9px 16px; border-radius: 9px; font-size: 14px; font-weight: 600;
+    font-family: inherit; box-shadow: var(--shadow);
+    transition: background .12s, color .12s, transform .05s, box-shadow .12s;
+  }
+  button:hover { background: var(--accent-dim); }
+  button.ghost { background: var(--panel); border: 1px solid var(--line-strong); color: var(--text); box-shadow: none; }
+  button.ghost:hover { background: var(--panel2); border-color: var(--muted); }
+  button.danger { background: var(--panel); border: 1px solid var(--err); color: var(--err); box-shadow: none; }
+  button.danger:hover { background: var(--err); color: #fff; }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .btnlink { display: inline-flex; align-items: center; padding: 11px 18px; border-radius: 10px;
+    background: var(--accent); color: #fff; font-weight: 600; font-size: 14px; text-decoration: none; }
+  .btnlink:hover { filter: brightness(1.05); }
+  .btnrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .flow {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 12px; background: var(--panel);
+  }
+  .flow h3 { margin: 0 0 4px; }
+  .flow .meta { color: var(--muted); font-size: 13px; margin-bottom: 10px; word-break: break-word; }
+  .checks { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .checks label { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--text); font-size: 14px; }
+  .checks input { width: auto; }
+  .status { margin-top: 14px; padding: 10px 12px; border-radius: 9px; font-size: 14px;
+            white-space: pre-wrap; display: none; }
+  .status.show { display: block; }
+  .status.ok { background: var(--ok-soft); border: 1px solid var(--ok); color: #0d7a37; }
+  .status.err { background: var(--err-soft); border: 1px solid var(--err); color: #b91c1c; }
+  .status.info { background: var(--panel2); border: 1px solid var(--line); color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+  a { color: var(--accent); }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .pill.ok { background: var(--ok-soft); color: #0d7a37; }
+  .pill.err { background: var(--err-soft); color: #b91c1c; }
+  .pill.run { background: var(--accent-soft); color: var(--accent); }
+  .note { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .lead { color: var(--muted); font-size: 13.5px; margin: 0 0 8px; }
+  .hidden { display: none; }
+  .picon { width: 15px; height: 15px; vertical-align: -2px; fill: currentColor; margin-right: 5px; }
+  .month { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+           margin-top: 12px; background: var(--panel2); }
+  .month .mhead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .month .mhead .mname { font-weight: 600; font-size: 15px; }
+  .month .mhead .mcount { color: var(--muted); font-size: 13px; }
+  .month details { margin-top: 10px; }
+  .month summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  .platchecks { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+  .platchecks label { display: flex; align-items: center; gap: 6px; margin: 0;
+                      color: var(--text); font-size: 14px; }
+  .platchecks input { width: auto; }
+  .hint { margin: 8px 0 14px; border: 1px solid var(--line); border-radius: 10px;
+          padding: 4px 14px; background: var(--accent-soft); }
+  .hint summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 600; padding: 8px 0; }
+  .hint p, .hint ul, .hint ol { color: #4b5468; font-size: 13px; margin: 8px 0; }
+  .hint ul, .hint ol { padding-left: 18px; }
+  .hint li { margin: 3px 0; }
+
+  /* Stat cards */
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .stat { flex: 1; min-width: 140px; background: var(--panel); position: relative;
+          border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .stat .num { font-size: 26px; font-weight: 700; letter-spacing: -.5px; }
+  .stat .lbl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+
+  /* Company cards */
+  .company { border: 1px solid var(--line); border-radius: 10px; padding: 15px 16px;
+             margin-bottom: 12px; background: var(--panel); box-shadow: var(--shadow); }
+  .company h3 { margin: 0 0 4px; }
+  .company .meta { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  .company .links { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+
+  /* Setup instructions */
+  .doc details { border: 1px solid var(--line); border-radius: 10px;
+                 margin-bottom: 10px; background: var(--panel); }
+  .doc summary { cursor: pointer; padding: 13px 15px; font-weight: 600; font-size: 14px; }
+  .doc summary:hover { color: var(--accent); }
+  .doc .body { padding: 0 16px 14px; color: #4b5468; font-size: 14px; }
+  .doc .body ol, .doc .body ul { padding-left: 20px; }
+  .doc .body li { margin: 6px 0; }
+  .doc .body code { background: var(--panel2); border: 1px solid var(--line-strong);
+                    padding: 1px 6px; border-radius: 5px; font-size: 13px; color: var(--text); }
+  .doc .body b { color: var(--text); }
+
+  /* Wizard modal */
+  .overlay { position: fixed; inset: 0; background: rgba(16,24,40,.45);
+             backdrop-filter: blur(2px); display: none; align-items: flex-start;
+             justify-content: center; padding: 4vh 14px; z-index: 50; overflow-y: auto; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--panel); border: 1px solid var(--line);
+           border-radius: 14px; width: 640px; max-width: 100%;
+           padding: 22px 24px; margin-bottom: 6vh; box-shadow: var(--shadow-lg); }
+  .modal h3 { margin: 0 0 2px; font-size: 18px; letter-spacing: -.2px; }
+  .modal .stepno { color: var(--accent); font-size: 12px; text-transform: uppercase;
+                   letter-spacing: .8px; font-weight: 700; }
+  .modal .mbody { color: #4b5468; font-size: 14px; }
+  .modal .mbody ol { padding-left: 20px; }
+  .modal .mbody li { margin: 6px 0; }
+  .modal .mbody code, .varname {
+    background: var(--panel2); border: 1px solid var(--line-strong); padding: 1px 6px;
+    border-radius: 5px; font-size: 13px; color: var(--text);
+    font-family: ui-monospace, monospace; }
+  .modal .mbody b { color: var(--text); }
+  .modal .mfoot { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .modal .mfoot .spacer { flex: 1; }
+  .copybtn { background: var(--panel); border: 1px solid var(--line-strong); color: var(--accent);
+             padding: 5px 11px; font-size: 12px; border-radius: 7px; box-shadow: none; }
+  .copybtn:hover { background: var(--accent-soft); }
+  .secretrow { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+  .secretrow .varname { flex: 0 0 auto; }
+  .wprogress { display: flex; gap: 5px; margin: 12px 0 16px; }
+  .wprogress span { flex: 1; height: 6px; border-radius: 3px; background: var(--line-strong); transition: background .2s; }
+  .wprogress span.done { background: var(--ok); }
+  .wprogress span.cur { background: var(--accent); }
+
+  /* ---- Hover tooltips ---- */
+  [data-tip] { position: relative; }
+  [data-tip]:hover::after {
+    content: attr(data-tip); position: absolute; bottom: calc(100% + 9px); left: 50%;
+    transform: translateX(-50%); background: #101827; color: #fff; padding: 7px 10px;
+    border-radius: 8px; font-size: 12px; font-weight: 500; line-height: 1.35;
+    width: max-content; max-width: 240px; white-space: normal; text-align: center;
+    z-index: 70; box-shadow: var(--shadow-lg); pointer-events: none;
+  }
+  [data-tip]:hover::before {
+    content: ""; position: absolute; bottom: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%); border: 5px solid transparent;
+    border-top-color: #101827; z-index: 70; pointer-events: none;
+  }
+  aside a.nav[data-tip]:hover::after { left: 8px; transform: none; bottom: auto; top: 50%;
+    margin-top: -14px; left: calc(100% + 6px); }
+  aside a.nav[data-tip]:hover::before { display: none; }
+  .help {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--muted);
+    color: var(--muted); font-size: 10px; font-weight: 700; cursor: help;
+    vertical-align: 1px; margin-left: 5px;
+  }
+  .help:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---- Polish ---- */
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.14);
+  }
+  button:active { transform: translateY(1px); }
+  tbody tr:hover td { background: var(--panel2); }
+  .month.on { border-left: 3px solid var(--ok); }
+  .month.off { opacity: .96; }
+  .empty {
+    text-align: center; color: var(--muted); font-size: 14px;
+    border: 1px dashed var(--line-strong); border-radius: 10px; padding: 28px 16px;
+    margin: 8px 0; background: var(--panel2);
+  }
+  .empty .big { font-size: 15px; color: var(--text); font-weight: 600;
+    margin-bottom: 4px; }
+  .empty button { margin-top: 12px; }
+  .pausebar { display: none; background: var(--err-soft);
+    border-bottom: 1px solid var(--err); color: #b91c1c; font-size: 13px;
+    padding: 9px 24px; text-align: center; font-weight: 500; }
+  .pausebar.show { display: block; }
+  .pausebar b { color: var(--err); }
+  .runpill { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.on { background: var(--ok); }
+  .dot.off { background: var(--err); }
+  .loadnote { color: var(--muted); font-size: 13px; padding: 10px 2px; }
+  .loadnote::after { content: "..."; animation: dots 1.2s steps(4, end) infinite; }
+  @keyframes dots { 0% { content: ""; } 25% { content: "."; }
+    50% { content: ".."; } 75% { content: "..."; } }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 820px) {
+    header { position: static; }
+    [data-tip]:hover::after, [data-tip]:hover::before { display: none; }
+    .shell { display: block; }
+    aside { width: 100%; flex: none; flex-direction: row; flex-wrap: wrap;
+            border-right: none; border-bottom: 1px solid var(--line);
+            padding: 10px 8px; position: sticky; top: 0; z-index: 20; gap: 4px; }
+    aside .logo { padding: 6px 8px; font-size: 14px; }
+    aside .logosub, aside .navfoot, aside .chip, aside .navgroup { display: none; }
+    aside a.nav { padding: 8px 10px; font-size: 13px; }
+    aside a.nav.active { border-left: none; padding-left: 10px; }
+    main { padding: 14px 10px 48px; }
+    section { padding: 14px 12px; margin-bottom: 16px; }
+    .row { gap: 10px; }
+    .row > div { flex: 1 1 100%; min-width: 100%; }
+    input[type=text], input[type=password], input[type=date], input[type=time],
+    input[type=number], input[type=file], textarea, select { font-size: 16px; }
+    button { padding: 12px 16px; font-size: 15px; }
+    .btnrow button { flex: 1 1 auto; }
+    table { display: block; overflow-x: auto; white-space: nowrap;
+            -webkit-overflow-scrolling: touch; }
+    .modal { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside id="sidenav">
+  <div class="logo">Posts Automation</div>
+  <div class="logosub">Multi-company workspace</div>
+  <div class="chip">Active company<b id="chip-company">-</b></div>
+  <div class="navgroup">Workspace</div>
+  <a class="nav" href="#dashboard" data-view="dashboard" data-tip="Overview, activity log and the pause switch">Dashboard</a>
+  <a class="nav" href="#scheduled" data-view="scheduled" data-tip="Everything waiting to publish; cancel or push out now">Scheduled Posts</a>
+  <a class="nav" href="#auto" data-view="auto" data-tip="Load a month of photos and switch it on">Auto Posts</a>
+  <a class="nav" href="#reports" data-view="reports" data-tip="Likes, comments and reach for what has posted; share it with the client">Reports</a>
+  <div class="navgroup">Manage</div>
+  <a class="nav" href="#companies" data-view="companies" data-tip="Switch between businesses and run guided setup">Companies</a>
+  <a class="nav" href="#admin" data-view="admin" data-tip="Add a new company; its repo is created for you">Admin</a>
+  <div class="navgroup">Help</div>
+  <a class="nav" href="#manual" data-view="manual" data-tip="Plain-language guide to running the system">User Manual</a>
+  <a class="nav" href="#setup" data-view="setup" data-tip="How to get every account and credential">Setup Instructions</a>
+  <a class="nav" href="#settings" data-view="settings" data-tip="The GitHub connection for the active company">Settings</a>
+  <div class="navfoot">All actions talk directly to GitHub with your token. Nothing else stores your data.</div>
+</aside>
+
+<div class="content">
+<header>
+  <h1 id="page-title">Dashboard</h1>
+  <span class="sub" id="company-badge"></span>
+</header>
+<div class="pausebar" id="pausebar">Automation is <b>PAUSED</b> for this company - nothing is posting. Resume it from the Dashboard.</div>
+<main>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div class="view" id="view-dashboard">
+    <section>
+      <h2>Overview</h2>
+      <div class="stats">
+        <div class="stat" data-tip="Running means the scheduler posts every 15 min. Paused means nothing goes out."><div class="num" id="st-status">-</div><div class="lbl">Automation</div></div>
+        <div class="stat" data-tip="Posts queued and waiting for their scheduled time"><div class="num" id="st-pending">-</div><div class="lbl">Waiting to post</div></div>
+        <div class="stat" data-tip="Posts already published from the queue"><div class="num" id="st-posted">-</div><div class="lbl">Posted</div></div>
+        <div class="stat" data-tip="Content campaigns set up for this company"><div class="num" id="st-campaigns">-</div><div class="lbl">Campaigns</div></div>
+      </div>
+      <div class="btnrow">
+        <button id="toggle-pause" data-tip="Stop or resume all posting for this company. Nothing is lost.">Pause automation</button>
+        <button id="run-standard" class="ghost" data-tip="Publish one caption-only post to every connected platform now">Post now (standard post)</button>
+        <button id="refresh-overview" class="ghost" data-tip="Reload the numbers, activity log and runs">Refresh</button>
+      </div>
+      <p class="note" id="pause-note"></p>
+      <div id="run-status" class="status"></div>
+    </section>
+
+    <section>
+      <h2>Activity log</h2>
+      <p class="lead">Every publish attempt on every platform, newest first. Failed posts show the platform's full error message.</p>
+      <div id="activity-table"><p class="loadnote">Loading</p></div>
+    </section>
+
+    <section>
+      <h2>Recent runs</h2>
+      <p class="lead">The automation runs on GitHub every 15 minutes; the latest runs and their logs are here.</p>
+      <div id="runs-table"></div>
+      <div id="runs-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ COMPANIES ============ -->
+  <div class="view" id="view-companies">
+    <section>
+      <h2>Companies</h2>
+      <p class="lead">Every business you automate. Switch between them, run their guided setup, or open their pages.</p>
+      <details class="hint"><summary>How this works</summary>
+        <ul>
+          <li>Each company lives in its own GitHub repository with its own content, schedule, captions and platform secrets.</li>
+          <li><b>Switch to</b> makes a company the active workspace: the Dashboard, Scheduled Posts and Auto Posts sections then show that company.</li>
+          <li><b>Guided setup</b> walks you through connecting Facebook, Instagram and GitHub step by step with verification at each step.</li>
+          <li>Add brand-new companies from the Admin section; their repository is created automatically.</li>
+        </ul>
+      </details>
+      <div id="company-list"></div>
+      <div class="btnrow">
+        <button id="add-existing" class="ghost" data-tip="Point the dashboard at a company repo you already have">Add an existing repo</button>
+        <button id="export-companies" class="ghost" data-tip="Download your company list as a backup file you can restore on another computer">Back up company list</button>
+        <button id="import-companies" class="ghost" data-tip="Restore a company list from a backup file">Restore from backup</button>
+        <input id="import-file" type="file" accept="application/json,.json" style="display:none">
+      </div>
+      <p class="note">Your company list lives in this browser. Back it up to move it to another computer or keep it safe - tokens are included, so store the file privately.</p>
+      <div id="companies-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ SCHEDULED POSTS ============ -->
+  <div class="view" id="view-scheduled">
+    <section>
+      <h2>Scheduled posts (queue)</h2>
+      <p class="lead">Everything waiting to publish for the active company, with its date, time and status.</p>
+      <details class="hint"><summary>How this works</summary>
+        <ul>
+          <li>Items are queued automatically from Auto Posts campaigns. Each shows when it will publish and to which platforms.</li>
+          <li>Pending items can be cancelled; failed items show their error and retry up to three times.</li>
+          <li>Process due posts now pushes anything overdue out immediately instead of waiting for the next 15-minute run.</li>
+        </ul>
+      </details>
+      <div id="queue-list"></div>
+      <div class="btnrow">
+        <button id="reload-queue" class="ghost" data-tip="Fetch the latest queue from GitHub">Reload queue</button>
+        <button id="run-queue" class="ghost" data-tip="Publish anything already overdue instead of waiting for the next run">Process due posts now</button>
+        <a id="open-preview" class="btnlink" target="_blank" rel="noopener" data-tip="A clean, read-only calendar of upcoming content to share with the client for review">Open content preview</a>
+      </div>
+      <div id="queue-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ AUTO POSTS ============ -->
+  <div class="view" id="view-auto">
+    <section>
+      <h2>Auto posts (campaigns)</h2>
+      <p class="lead">Hands-free posting, one month at a time: tick a month's checkbox, give it a start date, choose its platforms, and it posts itself day by day - feed posts and stories.</p>
+      <details class="hint"><summary>How this works</summary>
+        <ul>
+          <li>A campaign is a folder under content/. Months (Month 1, Month 2...) hold day folders; each day holds a Post and a Story folder of images/videos.</li>
+          <li>Each month has its own checkbox, start date and platform selection: only checked months post, day 1 on the month's start date, day 2 the next day, and so on.</li>
+          <li>Within one day: 2 files go out 6 hours apart, 3 files 4 hours apart, 4+ files 3 hours apart, starting at the posts/stories times.</li>
+          <li>Captions are written automatically with brand, niche and viral hashtags plus your contact details (or use a photo1.txt / caption.txt of your own). Stories have no caption.</li>
+          <li>Feed photos and stories both publish to Instagram and Facebook; every attempt is recorded in the Dashboard activity log.</li>
+          <li>Safety: long-past dates are not flooded out, and at most 20 posts go out per 24 hours.</li>
+        </ul>
+      </details>
+      <div id="campaign-list"></div>
+      <div class="btnrow">
+        <button id="reload-content" class="ghost" data-tip="Re-scan the content folders and month settings">Reload campaigns</button>
+        <button id="run-content" class="ghost" data-tip="Convert new photos, queue them, and post anything due right now">Sync and post now</button>
+      </div>
+
+      <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:16px;">
+        <h2 style="margin-bottom:6px;">Bulk upload and auto-sort</h2>
+        <p class="lead">Drop a pile of unsorted photos here and they are sorted into a month of day folders, ready to schedule.</p>
+        <details class="hint"><summary>How this works</summary>
+          <ul>
+            <li>Pick the campaign and the month to fill: an existing month continues its own day numbering; a new month (e.g. Month 2) starts at Day 1.</li>
+            <li>Feed images fill each day's Post folder (2 or 3 per day) and story images the Story folder; everything is sized and committed in one go.</li>
+            <li>New campaigns and months are registered automatically, unchecked, so nothing posts until you set the month's date, tick it, and Save.</li>
+          </ul>
+        </details>
+        <div class="row">
+          <div><label>Campaign</label>
+            <input id="bulk-campaign" list="bulk-campaign-list" autocomplete="off"
+              placeholder="type a name or pick one">
+            <datalist id="bulk-campaign-list"></datalist></div>
+          <div><label>Month (existing or new)</label>
+            <input id="bulk-month" list="bulk-month-list" autocomplete="off"
+              placeholder="e.g. Month 2">
+            <datalist id="bulk-month-list"></datalist></div>
+          <div><label>Feed posts per day</label>
+            <select id="bulk-ppd"><option>2</option><option>3</option></select></div>
+          <div><label>Stories per day</label>
+            <select id="bulk-spd"><option>2</option><option>3</option></select></div>
+          <div><label>Start at day</label>
+            <input id="bulk-startday" type="number" min="1" value="1"></div>
+        </div>
+        <label for="bulk-posts">Feed images (choose many)</label>
+        <input id="bulk-posts" type="file" accept="image/*" multiple>
+        <label for="bulk-stories">Story images (choose many)</label>
+        <input id="bulk-stories" type="file" accept="image/*" multiple>
+        <div class="btnrow">
+          <button id="bulk-plan" class="ghost" data-tip="See how the photos split into days before uploading">Preview plan</button>
+          <button id="bulk-upload" data-tip="Size the photos, sort them into the month, and commit in one go">Sort and upload</button>
+        </div>
+        <div id="bulk-plan-out" class="note"></div>
+      </div>
+
+      <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:16px;">
+        <label for="new-campaign-name">New campaign folder name</label>
+        <div class="row">
+          <div><input id="new-campaign-name" type="text" placeholder="e.g. Spring Collection"></div>
+          <div style="flex:0 0 auto;"><label>&nbsp;</label>
+            <button id="create-campaign" data-tip="Make an empty campaign folder to bulk-upload into">Create campaign</button></div>
+        </div>
+      </div>
+      <div id="content-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ REPORTS ============ -->
+  <div class="view" id="view-reports">
+    <section>
+      <h2>Reports</h2>
+      <p class="lead">How the posted content is performing - likes, comments and reach - pulled straight from Instagram and Facebook. Share the clean client-facing version with the business.</p>
+      <details class="hint"><summary>How this works</summary>
+        <ul>
+          <li>An automated weekly job (and the button below) reads every published post's live numbers into data/report.json.</li>
+          <li>The client report is a separate, branding-only page with no controls - safe to send to the business as a link.</li>
+          <li>Story numbers differ from feed numbers; whatever a platform will not give is simply left blank.</li>
+        </ul>
+      </details>
+      <div id="report-totals" class="stats"></div>
+      <div class="btnrow">
+        <button id="reload-report" class="ghost" data-tip="Re-read the latest numbers from data/report.json">Reload report</button>
+        <a id="open-client-report" class="btnlink" target="_blank" rel="noopener" data-tip="Open the shareable, client-facing report page">Open client report</a>
+      </div>
+      <div id="report-table"></div>
+      <div id="report-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ ADMIN ============ -->
+  <div class="view" id="view-admin">
+    <section>
+      <h2>Add a new company</h2>
+      <p class="lead">Creates a complete, ready-to-run copy of this automation for a new client: repository (on the main branch), workflows, dashboard and personalized captions.</p>
+      <details class="hint"><summary>How this works, step by step</summary>
+        <ul>
+          <li>A new GitHub repository is created automatically from this one as a template, named after the company (lowercase with hyphens), public, with <b>main</b> as the default branch and all starter files committed to it.</li>
+          <li>The business profile (name, description, phone, website) is written into config.yaml - captions use it automatically.</li>
+          <li>Starter content and queue data are cleared so the client begins empty.</li>
+          <li>The company then appears under Companies with a <b>Guided setup</b> button that walks you through connecting Facebook, Instagram and GitHub Pages.</li>
+          <li>The token needs repository-creation rights: a fine-grained PAT with Administration + Contents read/write, or a classic token with the repo scope.</li>
+        </ul>
+      </details>
+      <div class="row">
+        <div><label>Company / business name</label>
+          <input id="nc-name" type="text" placeholder="e.g. Sunrise Timber Co"></div>
+        <div><label>New repository name (auto)</label>
+          <input id="nc-repo" type="text" placeholder="sunrise-timber-co-posts"></div>
+      </div>
+      <label>What the business does (used to write captions)</label>
+      <textarea id="nc-desc" placeholder="e.g. Timber merchant supplying cut-to-size boards..."></textarea>
+      <div class="row">
+        <div><label>Contact phone (appended to every caption)</label>
+          <input id="nc-phone" type="text" placeholder="e.g. 0812345678"></div>
+        <div><label>Website (appended to every caption)</label>
+          <input id="nc-site" type="text" placeholder="https://..."></div>
+      </div>
+      <div class="row">
+        <div><label>GitHub owner (account that will hold the repo)</label>
+          <input id="nc-owner" type="text" placeholder="e.g. Marshall-007"></div>
+        <div><label>GitHub token with repo-creation rights (stored only in this browser)</label>
+          <input id="nc-token" type="password" placeholder="github_pat_... or ghp_..."></div>
+      </div>
+      <div class="btnrow">
+        <button id="nc-create" data-tip="Create the company's repository and jump into guided setup">Add Company</button>
+      </div>
+      <div id="nc-status" class="status"></div>
+    </section>
+  </div>
+
+  <!-- ============ USER MANUAL ============ -->
+  <div class="view" id="view-manual">
+    <section class="doc">
+      <h2>User manual</h2>
+      <p class="lead">How to run the system day to day, in plain language. For connecting accounts and credentials, see Setup Instructions instead.</p>
+
+      <details open>
+        <summary>What this system does</summary>
+        <div class="body">
+          <p>It posts your marketing photos to <b>Instagram and Facebook</b>
+          automatically - feed posts and stories - one month of content at a
+          time. You load a month of photos once, pick a start date, tick the
+          month, and it posts every day by itself: captions are written
+          automatically with your phone number, website and hashtags, and every
+          post is mirrored to Facebook (stories land in the Page's Stories
+          ring). A robot on GitHub wakes up every 15 minutes and does the work;
+          this dashboard is your remote control.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Getting around the dashboard</summary>
+        <div class="body">
+          <ul>
+            <li><b>Dashboard</b> - the day's numbers, the activity log (every post and any errors), and the latest automation runs.</li>
+            <li><b>Scheduled Posts</b> - everything waiting to publish, with dates and cancel buttons.</li>
+            <li><b>Auto Posts</b> - your campaigns and months; this is where you load content and switch months on.</li>
+            <li><b>Companies</b> - switch between the businesses you manage and run their guided setup.</li>
+            <li><b>Admin</b> - add a brand-new company (its repository is created automatically).</li>
+            <li><b>User Manual / Setup Instructions</b> - this guide, and the credentials guide.</li>
+            <li><b>Settings</b> - the GitHub connection for the active company.</li>
+          </ul>
+          <p>The left menu's <b>Active company</b> chip always shows which business you are working on.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Post a month of content (the everyday job)</summary>
+        <div class="body">
+          <ol>
+            <li>Open <b>Auto Posts</b>.</li>
+            <li>Scroll to <b>Bulk upload and auto-sort</b>. Pick the campaign (or type a new name), and keep the suggested month (e.g. <code>Month 2</code>).</li>
+            <li>Choose your <b>feed images</b> (the polished ones for the grid) and your <b>story images</b> (the casual ones). Pick 2 or 3 per day for each.</li>
+            <li>Press <b>Preview plan</b> to see how they will be split into days, then <b>Sort and upload</b>.</li>
+            <li>When the upload finishes, find the new month card above. Set its <b>start date</b>, tick <b>Instagram</b> and <b>Facebook</b>, tick the <b>month's checkbox</b>, and press <b>Save campaign</b>.</li>
+            <li>Done. Day 1 posts on the start date, day 2 the next day, and so on. Open the <b>Day-by-day plan</b> inside the month card any time to see exactly what posts when.</li>
+          </ol>
+          <p><b>Timing:</b> feed posts start at the campaign's "Posts time", stories at the "Stories time". If a day has 2 files they go out 6 hours apart; 3 files, 4 hours apart.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Pause everything (and resume)</summary>
+        <div class="body">
+          <p>On the <b>Dashboard</b> there is a big <b>Pause automation</b> button.
+          Press it and the whole company stops instantly: no posts go out and no
+          new content is queued. A red banner appears across the top so it is
+          obvious. Nothing is lost - your months, dates and queued posts stay
+          exactly as they were.</p>
+          <p>Press <b>Resume automation</b> to switch it back on; due posts go out
+          on the next 15-minute run. Pausing is per company (it affects the one
+          shown in the "Active company" chip), so pausing one client never
+          affects another.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Fix a mistake without pausing everything</summary>
+        <div class="body">
+          <ul>
+            <li><b>Pause just one month:</b> untick its checkbox in Auto Posts and Save. Already-queued posts can be cancelled under Scheduled Posts.</li>
+            <li><b>Cancel one post:</b> Scheduled Posts, press <b>Cancel</b> on the row. The photo is removed too.</li>
+            <li><b>Wrong start date before anything posted:</b> change the date and Save - future days follow the new date. Posts already in the queue keep their old time; cancel them if needed and they re-queue on the next run.</li>
+            <li><b>Post something right now:</b> Scheduled Posts, <b>Process due posts now</b> pushes out anything overdue.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Do tokens ever expire? (No.)</summary>
+        <div class="body">
+          <p>Both Instagram and Facebook use tokens that <b>renew themselves</b>.
+          A weekly job refreshes the Instagram token and re-derives a permanent
+          Facebook Page token, writing the fresh values back automatically. Once
+          a company is set up, you never log in again or re-paste a token - it
+          just keeps running until you pause it.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Reading the activity log</summary>
+        <div class="body">
+          <p>Dashboard, <b>Activity log</b>. Every attempt is one row: when, which
+          platform, feed or story, and the result. A green <b>posted</b> row shows
+          the platform's post id. A red <b>failed</b> row shows the platform's own
+          error message - read it, it usually says exactly what is wrong (for
+          example an expired token or a permission the Page is missing). Failed
+          posts retry automatically up to three times.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Add a new company (about 30 minutes end to end)</summary>
+        <div class="body">
+          <ol>
+            <li><b>Admin</b>: fill in the business name, what it does, phone and website, then <b>Add Company</b>. Its repository is created automatically on the <code>main</code> branch, captions personalized, starter data cleared.</li>
+            <li><b>Companies</b>: press <b>Guided setup</b> on the new card. The wizard walks you through the GitHub token, Facebook Page, Instagram and GitHub Pages, verifying each step - all tokens are made long-lived or permanent automatically.</li>
+            <li><b>Auto Posts</b>: bulk-upload their first month, set the date and platforms, tick, Save.</li>
+          </ol>
+          <p>From then on the new company runs itself, exactly like the first one.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Troubleshooting</summary>
+        <div class="body">
+          <table>
+            <thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
+            <tbody>
+            <tr><td>Nothing is posting</td><td>Auto Posts: is the month ticked, with a start date that is today or later? Scheduled Posts: are items pending with future times? Dashboard: any red rows in the activity log?</td></tr>
+            <tr><td>A post failed with a token error</td><td>Run the company's Guided setup again from that platform's step - paste a fresh token; it is upgraded and verified for you.</td></tr>
+            <tr><td>Stories on Facebook are not visible</td><td>Page stories show in the Facebook mobile app's Stories ring and expire after 24h; the activity log's post id proves it published.</td></tr>
+            <tr><td>Dashboard says "No access token set"</td><td>Settings: paste the company's GitHub token and Save, or switch to the company under Companies.</td></tr>
+            <tr><td>An upload seems stuck</td><td>Large batches take a minute (one commit per upload). Check the status line under the buttons; reload and retry if it errored.</td></tr>
+            <tr><td>Posted fewer items than expected today</td><td>The safety cap allows at most 20 posts per rolling 24 hours; the rest go out on the next runs automatically.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <details>
+        <summary>Good-to-know rules the system enforces</summary>
+        <div class="body">
+          <ul>
+            <li>Photos are converted and resized automatically; feed keeps its natural shape, stories become 1080x1920.</li>
+            <li>Each photo is deleted from storage after it posts - the repo does not fill up.</li>
+            <li>Captions never repeat back to back, always include your contact line, and stay within Instagram's limits.</li>
+            <li>A month whose dates are long past will not flood out old posts; fix the start date and it schedules from there.</li>
+            <li>Instagram tokens renew themselves weekly; permanent Facebook Page tokens never expire.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <!-- ============ SETUP INSTRUCTIONS ============ -->
+  <div class="view" id="view-setup">
+    <section class="doc">
+      <h2>Setup instructions</h2>
+      <p class="lead">Everything needed to connect a company, in plain language. These are the exact steps used to configure the first working company. For a guided version with verification, use the Guided setup button on any company card.</p>
+
+      <details>
+        <summary>1. Create a Facebook App and Page</summary>
+        <div class="body">
+          <p><b>The Page</b> is where posts appear. <b>The App</b> is what gives the automation permission to post.</p>
+          <ol>
+            <li>Create the Page (once, from your personal Facebook account): go to <code>https://www.facebook.com/pages/create</code>, enter the business name, pick a category (e.g. <b>Furniture shop</b>), press <b>Create Page</b>, then <b>Publish</b>.</li>
+            <li>Create the App: go to <code>https://developers.facebook.com</code>, click <b>My Apps</b>, then <b>Create App</b>, choose type <b>Business</b>, name it (e.g. "Company Poster") and press <b>Create App</b>.</li>
+            <li>Tip: choose <b>"I don't want to connect a business portfolio"</b> if asked - personally-owned apps avoid Business Manager permission problems.</li>
+            <li>On the app's <b>App settings, Basic</b> page, note the <b>App ID</b> and <b>App Secret</b> (click <b>Show</b>).</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>2. Get the Facebook Page ID and Page Access Token</summary>
+        <div class="body">
+          <ol>
+            <li>Open <code>https://developers.facebook.com/tools/explorer</code> (Graph API Explorer) and select your app top-right.</li>
+            <li>Click <b>Generate Access Token</b>. Approve the permissions <code>pages_show_list</code>, <code>pages_manage_posts</code>, <code>pages_read_engagement</code>.</li>
+            <li><b>Important:</b> on the "Which Pages do you want to use" screen, tick your Page. Do not choose "opt in later".</li>
+            <li>In the request box type <code>me/accounts</code> and press <b>Submit</b>. The response lists your Page with its <b>id</b> (that is FACEBOOK_PAGE_ID) and an <b>access_token</b>.</li>
+            <li>If <code>me/accounts</code> returns an empty list, use the direct route that is proven to work: find the Page id in the token debugger (<code>https://developers.facebook.com/tools/debug/accesstoken</code> - paste your token, look under Granular Scopes), then query <code>PAGE_ID?fields=access_token,name</code> in the Explorer.</li>
+            <li>Make the token permanent: exchange your user token at <code>https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&amp;client_id=APP_ID&amp;client_secret=APP_SECRET&amp;fb_exchange_token=YOUR_TOKEN</code>, then repeat step 4 or 5 with the returned long-lived token - the Page token it yields does not expire.</li>
+          </ol>
+          <p>The Guided setup modal does the exchange and verification for you automatically.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3. Link the Instagram Business account to the Facebook Page</summary>
+        <div class="body">
+          <ol>
+            <li>In the Instagram app: <b>Profile, menu, Settings and privacy, Account type and tools, Switch to professional account</b>, choose <b>Business</b>.</li>
+            <li>On your Facebook Page: <b>Settings, Linked accounts, Instagram, Connect account</b>, and log in with the Instagram business account.</li>
+            <li>This link is what lets Meta issue posting tokens for the Instagram account.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. Get the Instagram Access Token, User ID and App Secret</summary>
+        <div class="body">
+          <ol>
+            <li>In your Meta app (<code>https://developers.facebook.com</code>, My Apps, your app): click <b>Add Product</b> and add <b>Instagram</b>, then the <b>Instagram Business Login</b> (API setup with Instagram login) use case.</li>
+            <li>Under the Instagram product's <b>API setup</b>, click <b>Generate token</b> next to your Instagram account and approve <code>instagram_business_basic</code> and <code>instagram_business_content_publish</code>. The token starts with <code>IGAA</code>.</li>
+            <li>Get the User ID: open <code>https://graph.instagram.com/me?fields=id,username&amp;access_token=YOUR_TOKEN</code> in a browser tab; the <b>id</b> field is INSTAGRAM_USER_ID.</li>
+            <li>The App Secret is on <b>App settings, Basic</b> (click <b>Show</b>) - store it as INSTAGRAM_APP_SECRET; it lets the system upgrade and refresh the token automatically so it never expires.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>5. Generate a GitHub fine-grained token (GH_PAT)</summary>
+        <div class="body">
+          <ol>
+            <li>Go to <code>https://github.com/settings/personal-access-tokens/new</code>.</li>
+            <li><b>Token name:</b> e.g. "company-posts-automation". <b>Expiration:</b> choose <b>No expiration</b> (or 1 year and note the renewal date).</li>
+            <li><b>Repository access:</b> Only select repositories, pick the company's repo.</li>
+            <li><b>Repository permissions:</b> set <b>Actions</b>, <b>Contents</b>, <b>Secrets</b>, <b>Workflows</b> and <b>Administration</b> all to <b>Read and write</b>. (Workflows is needed to copy the automation workflow files into a new repo; Administration lets Guided setup set the default branch.)</li>
+            <li>Click <b>Generate token</b> and copy it (it is shown once).</li>
+            <li>This token is used twice: pasted into this dashboard's Settings (so the dashboard can act on the repo), and stored as the <code>GH_PAT</code> secret (so workflows can refresh platform tokens).</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>6. Enable GitHub Pages (main branch, /docs folder)</summary>
+        <div class="body">
+          <ol>
+            <li>Open the company repository on GitHub and click <b>Settings</b>.</li>
+            <li>In the left menu click <b>Pages</b>.</li>
+            <li>Under <b>Build and deployment, Source</b>, choose <b>Deploy from a branch</b>.</li>
+            <li>Set <b>Branch</b> to <code>main</code> and the folder to <code>/docs</code>, then press <b>Save</b>.</li>
+            <li>Wait about a minute; the published URL appears at the top of the Pages screen (like <code>https://OWNER.github.io/REPO/</code>). That URL is this dashboard, hosted.</li>
+          </ol>
+          <p><b>No <code>main</code> branch or <code>/docs</code> folder to choose?</b> The repository is
+          empty. Companies created from <b>Admin, Add Company</b> already have both. For a repository you
+          made by hand, open <b>Companies, Guided setup</b> and use the <b>Create the main branch and /docs
+          folder</b> button on the GitHub Pages step - it copies the code, workflows and dashboard onto
+          <code>main</code> so these options appear.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>7. Where every secret is stored</summary>
+        <div class="body">
+          <p>All platform credentials live as encrypted repository secrets: repo <b>Settings, Secrets and variables, Actions, New repository secret</b>. Exact names:</p>
+          <ul>
+            <li><code>INSTAGRAM_ACCESS_TOKEN</code> - Instagram token starting with IGAA</li>
+            <li><code>INSTAGRAM_USER_ID</code> - Instagram Business account ID</li>
+            <li><code>INSTAGRAM_APP_SECRET</code> - Meta app secret (enables automatic token refresh)</li>
+            <li><code>GH_PAT</code> - the fine-grained token from section 5</li>
+            <li><code>FACEBOOK_PAGE_ID</code> - the Page's numeric ID</li>
+            <li><code>FACEBOOK_PAGE_ACCESS_TOKEN</code> - the permanent Page token</li>
+            <li><code>FACEBOOK_APP_ID</code>, <code>FACEBOOK_APP_SECRET</code>, <code>FACEBOOK_USER_TOKEN</code> - let the weekly job re-derive the Page token so it never expires</li>
+            <li><code>ANTHROPIC_API_KEY</code> - optional, for AI-written standard posts</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>8. How token auto-refresh works (and why the App Secret is needed)</summary>
+        <div class="body">
+          <p>Instagram long-lived tokens last 60 days. A scheduled workflow
+          (<b>Refresh social tokens</b>, Sundays) calls Instagram's refresh
+          endpoint and writes the renewed token back into the
+          <code>INSTAGRAM_ACCESS_TOKEN</code> secret using <code>GH_PAT</code> -
+          so the 60-day clock resets every week, forever.</p>
+          <p>The <code>INSTAGRAM_APP_SECRET</code> is required for one thing:
+          upgrading a fresh short-lived token (1 hour) to a long-lived one
+          (60 days). With it stored, you can paste any newly generated token
+          and the system upgrades it automatically at post time and on the next
+          refresh run.</p>
+          <p><b>Facebook works the same way.</b> A Page token derived from a
+          long-lived User token never expires - but if a short-lived one is ever
+          pasted by mistake, the same weekly job re-derives a fresh permanent
+          Page token from <code>FACEBOOK_USER_TOKEN</code> using
+          <code>FACEBOOK_APP_ID</code> and <code>FACEBOOK_APP_SECRET</code>, and
+          re-stores <code>FACEBOOK_PAGE_ACCESS_TOKEN</code>. Store those three and
+          Facebook can never lapse again. (The one-time symptom where a token
+          "expired" was a short-lived token stored without these three.)</p>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <!-- ============ SETTINGS ============ -->
+  <div class="view" id="view-settings">
+    <section>
+      <h2>Connection settings</h2>
+      <p class="lead">The GitHub repository and token this workspace talks to. Switching companies (Companies section) updates these automatically.</p>
+      <details class="hint"><summary>How this works</summary>
+        <ul>
+          <li>The dashboard is a plain web page: it talks directly to the GitHub API with the token below. There is no other server, and the token is stored only in this browser.</li>
+          <li>The token needs Actions, Contents, Secrets, Workflows and Administration permissions (read/write) on this one repository - see Setup Instructions section 5.</li>
+        </ul>
+      </details>
+      <div class="row">
+        <div>
+          <label for="owner">Owner</label>
+          <input id="owner" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="repo">Repository</label>
+          <input id="repo" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="branch">Branch</label>
+          <input id="branch" type="text" autocomplete="off">
+        </div>
+      </div>
+      <label for="token">GitHub access token</label>
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_...">
+      <p class="note">Stored only in this browser (localStorage). It is never sent anywhere except GitHub's API.</p>
+      <div class="btnrow">
+        <button id="save-setup" data-tip="Store this connection in your browser">Save</button>
+        <button id="test-setup" class="ghost" data-tip="Check the token can reach this repository">Test connection</button>
+      </div>
+      <div id="setup-status" class="status"></div>
+    </section>
+  </div>
+
+</main>
+</div>
+</div>
+
+<!-- Wizard modal -->
+<div class="overlay" id="wizard-overlay">
+  <div class="modal">
+    <div class="stepno" id="wz-stepno"></div>
+    <h3 id="wz-title"></h3>
+    <div class="wprogress" id="wz-progress"></div>
+    <div class="mbody" id="wz-body"></div>
+    <div id="wz-status" class="status"></div>
+    <div class="mfoot">
+      <button class="ghost" id="wz-back">Back</button>
+      <button class="ghost" id="wz-close">Close</button>
+      <span class="spacer"></span>
+      <button id="wz-verify">Save and Verify</button>
+      <button id="wz-next">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+var API = "https://api.github.com";
+var WORKFLOW_FILE = "post.yml";
+var SCHEDULER_FILE = "scheduler.yml";
+var QUEUE_PATH = "data/queue.json";
+var ACTIVITY_PATH = "data/activity.json";
+var REPORT_PATH = "data/report.json";
+var CAMPAIGNS_PATH = "data/campaigns.json";
+var SQUARE = 1080;
+
+var el = function (id) { return document.getElementById(id); };
+
+var DEFAULTS = {
+  owner: "Marshall-007",
+  repo: "Business-Posts-automation",
+  branch: "claude/account-setup-config-569zpw",
+  token: ""
+};
+
+// The supported platforms.
+var PLATFORMS = ["instagram", "facebook"];
+var PLATFORM_LABELS = { instagram: "Instagram", facebook: "Facebook" };
+var PLATFORM_ICONS = {
+  instagram: "M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z",
+  facebook: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+};
+
+function platformIcon(name) {
+  var d = PLATFORM_ICONS[name];
+  if (!d) return "";
+  return "<svg class='picon' viewBox='0 0 24 24' aria-hidden='true'><path d='" + d + "'></path></svg>";
+}
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+// ---- Settings / connection ----
+function settings() {
+  return {
+    owner: (el("owner").value || "").trim(),
+    repo: (el("repo").value || "").trim(),
+    branch: (el("branch").value || "").trim(),
+    token: (el("token").value || "").trim()
+  };
+}
+
+function loadSettings() {
+  var saved;
+  try { saved = JSON.parse(localStorage.getItem("gwalava_dash") || "{}"); }
+  catch (e) { saved = {}; }
+  var q = new URLSearchParams(location.search);
+  el("owner").value = q.get("owner") || saved.owner || DEFAULTS.owner;
+  el("repo").value = q.get("repo") || saved.repo || DEFAULTS.repo;
+  el("branch").value = q.get("branch") || saved.branch || DEFAULTS.branch;
+  el("token").value = saved.token || DEFAULTS.token;
+  updateBadge(q.get("name") || saved.name || "");
+}
+
+function updateBadge(name) {
+  var s = settings();
+  el("company-badge").textContent = (name ? name + "  -  " : "") + s.owner + "/" + s.repo;
+  el("chip-company").textContent = name || (s.owner + "/" + s.repo);
+  if (name) { document.title = name + " - Posts Automation"; }
+}
+
+function saveSettings(name) {
+  var data = settings();
+  if (name) data.name = name;
+  else {
+    try { data.name = (JSON.parse(localStorage.getItem("gwalava_dash") || "{}")).name || ""; }
+    catch (e) { data.name = ""; }
+  }
+  localStorage.setItem("gwalava_dash", JSON.stringify(data));
+}
+
+function status(id, kind, msg) {
+  var s = el(id);
+  s.className = "status show " + kind;
+  s.textContent = msg;
+}
+
+function b64encode(str) { return btoa(unescape(encodeURIComponent(str))); }
+function b64decode(str) { return decodeURIComponent(escape(atob(str.replace(/\n/g, "")))); }
+
+function api(path, options) {
+  var s = settings();
+  if (!s.token) return Promise.reject(new Error("No access token set. Fill it in under Settings and Save."));
+  return apiWith(s.token, path, options);
+}
+
+function apiWith(token, path, options) {
+  options = options || {};
+  options.headers = Object.assign({
+    "Authorization": "Bearer " + token,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  }, options.headers || {});
+  return fetch(API + path, options).then(function (resp) {
+    if (resp.status === 204) return {};
+    return resp.text().then(function (body) {
+      var data = body ? JSON.parse(body) : {};
+      if (!resp.ok) {
+        var m = data && data.message ? data.message : ("HTTP " + resp.status);
+        var e = new Error(m); e.status = resp.status; throw e;
+      }
+      return data;
+    });
+  });
+}
+
+// ---- Router (one section visible at a time) ----
+var VIEWS = ["dashboard", "companies", "scheduled", "auto", "reports", "admin", "manual", "setup", "settings"];
+var VIEW_TITLES = {
+  dashboard: "Dashboard", companies: "Companies", scheduled: "Scheduled Posts",
+  auto: "Auto Posts", reports: "Reports", admin: "Admin", manual: "User Manual",
+  setup: "Setup Instructions", settings: "Settings"
+};
+
+function route() {
+  var v = (location.hash || "#dashboard").slice(1);
+  if (VIEWS.indexOf(v) < 0) v = "dashboard";
+  VIEWS.forEach(function (name) {
+    el("view-" + name).classList.toggle("active", name === v);
+  });
+  document.querySelectorAll("aside a.nav").forEach(function (a) {
+    a.classList.toggle("active", a.getAttribute("data-view") === v);
+  });
+  el("page-title").textContent = VIEW_TITLES[v];
+  // Lazy-load data for the section being opened.
+  if (!settings().token) return;
+  if (v === "dashboard") { refreshOverview(); }
+  else if (v === "scheduled") { loadQueue(); }
+  else if (v === "auto") { loadConfig().then(loadCampaigns); }
+  else if (v === "reports") { loadReport(); }
+  else if (v === "companies") { renderCompanies(); }
+}
+window.addEventListener("hashchange", route);
+
+// ---- Connection buttons ----
+el("save-setup").onclick = function () {
+  saveSettings();
+  updateBadge("");
+  status("setup-status", "ok", "Saved.");
+};
+el("test-setup").onclick = function () {
+  saveSettings();
+  var s = settings();
+  status("setup-status", "info", "Testing...");
+  api("/repos/" + s.owner + "/" + s.repo).then(function (r) {
+    status("setup-status", "ok", "Connected to " + r.full_name +
+      (r.private ? " (private)" : " (public)") + ". Default branch: " + r.default_branch);
+  }).catch(function (e) {
+    status("setup-status", "err", "Failed: " + e.message);
+  });
+};
+
+// ---- Dashboard overview ----
+function dispatch(inputs, statusId) {
+  var s = settings();
+  saveSettings();
+  status(statusId, "info", "Sending trigger...");
+  return api("/repos/" + s.owner + "/" + s.repo + "/actions/workflows/" +
+      WORKFLOW_FILE + "/dispatches", {
+    method: "POST",
+    body: JSON.stringify({ ref: s.branch, inputs: inputs || {} })
+  }).then(function () {
+    status(statusId, "ok", "Run triggered. It will appear under Recent runs in a few seconds.");
+    setTimeout(loadRuns, 3500);
+  }).catch(function (e) {
+    status(statusId, "err", "Failed: " + e.message);
+  });
+}
+el("run-standard").onclick = function () { dispatch({}, "run-status"); };
+el("refresh-overview").onclick = function () { refreshOverview(); };
+
+function refreshOverview() {
+  loadQueue(true).then(function () {
+    var counts = { pending: 0, posted: 0, error: 0 };
+    queueState.items.forEach(function (it) {
+      counts[it.status] = (counts[it.status] || 0) + 1;
+    });
+    el("st-pending").textContent = counts.pending || 0;
+    el("st-posted").textContent = counts.posted || 0;
+  }).catch(function () {});
+  loadConfig().then(function () {
+    el("st-campaigns").textContent = Object.keys(configState.campaigns || {}).length;
+  }).catch(function () {});
+  loadAutomation();
+  loadActivity();
+  loadRuns();
+}
+
+// ---- Pause / resume automation ----
+var AUTOMATION_PATH = "data/automation.json";
+var automationState = { paused: false, sha: null, loaded: false };
+
+function applyPausedUI() {
+  var p = automationState.paused;
+  el("pausebar").classList.toggle("show", p);
+  el("st-status").textContent = p ? "Paused" : "Running";
+  el("st-status").style.color = p ? "var(--err)" : "var(--ok)";
+  var btn = el("toggle-pause");
+  btn.textContent = p ? "Resume automation" : "Pause automation";
+  btn.className = p ? "" : "danger";
+  el("pause-note").textContent = p
+    ? "Paused: no posts go out and no new content is queued until you resume. Nothing is lost."
+    : "Running: the scheduler posts due content every 15 minutes.";
+}
+
+function loadAutomation() {
+  var s = settings();
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + AUTOMATION_PATH +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (r) {
+    automationState.sha = r.sha;
+    automationState.paused = !!JSON.parse(b64decode(r.content)).paused;
+    automationState.loaded = true;
+    applyPausedUI();
+  }).catch(function () {
+    automationState.paused = false;
+    automationState.sha = null;
+    automationState.loaded = true;
+    applyPausedUI();
+  });
+}
+
+function setPaused(paused) {
+  var s = settings();
+  var btn = el("toggle-pause");
+  btn.disabled = true;
+  status("run-status", "info", paused ? "Pausing..." : "Resuming...");
+  var body = {
+    message: (paused ? "Pause" : "Resume") + " automation via dashboard",
+    content: b64encode(JSON.stringify({ paused: paused }, null, 2) + "\n"),
+    branch: s.branch
+  };
+  if (automationState.sha) body.sha = automationState.sha;
+  api("/repos/" + s.owner + "/" + s.repo + "/contents/" + AUTOMATION_PATH, {
+    method: "PUT", body: JSON.stringify(body)
+  }).then(function (r) {
+    automationState.sha = r.content.sha;
+    automationState.paused = paused;
+    applyPausedUI();
+    status("run-status", "ok", paused
+      ? "Automation paused. Resume any time - nothing was lost."
+      : "Automation resumed. Due posts go out on the next run.");
+  }).catch(function (e) {
+    status("run-status", "err", "Failed: " + e.message);
+  }).then(function () { btn.disabled = false; });
+}
+
+el("toggle-pause").onclick = function () {
+  if (!automationState.loaded) { loadAutomation().then(function () { setPaused(!automationState.paused); }); return; }
+  if (!automationState.paused && !confirm("Pause automation for this company? Nothing will post until you resume.")) return;
+  setPaused(!automationState.paused);
+};
+
+function loadActivity() {
+  var s = settings();
+  api("/repos/" + s.owner + "/" + s.repo + "/contents/" + ACTIVITY_PATH +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (r) {
+    var entries = (JSON.parse(b64decode(r.content)).entries || []).slice(0, 40);
+    if (!entries.length) {
+      el("activity-table").innerHTML = "<p class='note'>No activity recorded yet.</p>";
+      return;
+    }
+    var rows = entries.map(function (e) {
+      var cls = e.ok ? "ok" : "err";
+      var what = e.ok ? ("post id " + (e.post_id || "")) : (e.error || "failed");
+      return "<tr><td>" + esc(new Date(e.at).toLocaleString()) + "</td>" +
+        "<td>" + platformIcon(e.platform) + esc(PLATFORM_LABELS[e.platform] || e.platform) + "</td>" +
+        "<td>" + esc(e.kind || "") + "</td>" +
+        "<td><span class='pill " + cls + "'>" + (e.ok ? "posted" : "failed") + "</span></td>" +
+        "<td style='max-width:340px; white-space:normal; word-break:break-word;'>" + esc(what) + "</td></tr>";
+    }).join("");
+    el("activity-table").innerHTML =
+      "<table><thead><tr><th>When</th><th>Platform</th><th>Type</th><th>Result</th><th>Detail</th></tr></thead><tbody>" +
+      rows + "</tbody></table>";
+  }).catch(function () {
+    el("activity-table").innerHTML =
+      "<p class='note'>No activity log yet. It appears after the first automated post.</p>";
+  });
+}
+
+var REPORT_METRIC_LABELS = {
+  likes: "Likes", comments: "Comments", reach: "Reach", shares: "Shares"
+};
+
+function metricCards(title, metrics, order) {
+  var have = order.filter(function (k) { return typeof metrics[k] === "number"; });
+  if (!have.length) return "";
+  return have.map(function (k) {
+    return "<div class='stat'><div class='num'>" + metrics[k].toLocaleString() +
+      "</div><div class='lbl'>" + esc(title) + " " +
+      esc(REPORT_METRIC_LABELS[k] || k) + "</div></div>";
+  }).join("");
+}
+
+function loadReport() {
+  var s = settings();
+  var link = el("open-client-report");
+  if (link) link.href = "report.html?repo=" + encodeURIComponent(s.owner + "/" + s.repo) +
+    "&branch=" + encodeURIComponent(s.branch);
+  api("/repos/" + s.owner + "/" + s.repo + "/contents/" + REPORT_PATH +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (r) {
+    var rep = JSON.parse(b64decode(r.content));
+    var t = rep.totals || {};
+    var cards = "<div class='stat'><div class='num'>" + (t.posts || 0) +
+      "</div><div class='lbl'>Posts measured</div></div>" +
+      metricCards("Instagram", t.instagram || {}, ["likes", "comments", "reach"]) +
+      metricCards("Facebook", t.facebook || {}, ["likes", "comments", "shares"]);
+    el("report-totals").innerHTML = cards;
+    var items = rep.items || [];
+    if (!items.length) {
+      el("report-table").innerHTML = "<p class='note'>No measured posts yet. The report fills in after content has published and the weekly analytics job (or Reload) runs.</p>";
+    } else {
+      var rows = items.map(function (it) {
+        var ig = it.instagram || {}, fb = it.facebook || {};
+        function num(m, k) { return typeof m[k] === "number" ? m[k].toLocaleString() : "-"; }
+        return "<tr><td>" + esc(it.posted_at ? new Date(it.posted_at).toLocaleDateString() : "-") + "</td>" +
+          "<td style='max-width:260px; white-space:normal; word-break:break-word;'>" + esc(it.caption || "") + "</td>" +
+          "<td>" + esc(it.post_type || "") + "</td>" +
+          "<td>" + (it.instagram ? num(ig, "likes") : "-") + "</td>" +
+          "<td>" + (it.instagram ? num(ig, "comments") : "-") + "</td>" +
+          "<td>" + (it.instagram ? num(ig, "reach") : "-") + "</td>" +
+          "<td>" + (it.facebook ? num(fb, "likes") : "-") + "</td>" +
+          "<td>" + (it.facebook ? num(fb, "comments") : "-") + "</td>" +
+          "<td>" + (it.facebook ? num(fb, "shares") : "-") + "</td></tr>";
+      }).join("");
+      el("report-table").innerHTML =
+        "<table><thead><tr><th>Date</th><th>Caption</th><th>Type</th>" +
+        "<th>IG Likes</th><th>IG Comments</th><th>IG Reach</th>" +
+        "<th>FB Likes</th><th>FB Comments</th><th>FB Shares</th></tr></thead><tbody>" +
+        rows + "</tbody></table>";
+    }
+    var when = rep.generated_at ? new Date(rep.generated_at).toLocaleString() : "unknown";
+    status("report-status", "info", "Last updated " + when + ".");
+  }).catch(function () {
+    el("report-totals").innerHTML = "";
+    el("report-table").innerHTML = "<p class='note'>No report yet. It is created by the weekly analytics job; run it from the Actions tab (\"Update analytics report\") or wait for the schedule.</p>";
+    el("report-status").className = "status";
+  });
+}
+
+el("reload-report").onclick = loadReport;
+
+function loadRuns() {
+  var s = settings();
+  api("/repos/" + s.owner + "/" + s.repo + "/actions/runs?per_page=8").then(function (r) {
+    var runs = r.workflow_runs || [];
+    el("runs-status").className = "status";
+    if (!runs.length) { el("runs-table").innerHTML = "<p class='note'>No runs yet.</p>"; return; }
+    var rows = runs.map(function (run) {
+      var state, cls;
+      if (run.status !== "completed") { state = run.status; cls = "run"; }
+      else if (run.conclusion === "success") { state = "success"; cls = "ok"; }
+      else { state = run.conclusion || "failed"; cls = "err"; }
+      var when = new Date(run.created_at).toLocaleString();
+      return "<tr><td>" + esc(run.name) + "</td>" +
+        "<td><span class='pill " + cls + "'>" + esc(state) + "</span></td>" +
+        "<td>" + esc(when) + "</td>" +
+        "<td><a href='" + run.html_url + "' target='_blank' rel='noopener'>view</a></td></tr>";
+    }).join("");
+    el("runs-table").innerHTML =
+      "<table><thead><tr><th>Workflow</th><th>Status</th><th>When</th><th></th></tr></thead><tbody>" +
+      rows + "</tbody></table>";
+  }).catch(function (e) {
+    status("runs-status", "err", "Failed: " + e.message);
+  });
+}
+
+// ---- Scheduled posts (queue) ----
+var queueState = { items: [], sha: null };
+
+function loadQueue(silent) {
+  var s = settings();
+  var pv = el("open-preview");
+  if (pv) pv.href = "preview.html?repo=" + encodeURIComponent(s.owner + "/" + s.repo) +
+    "&branch=" + encodeURIComponent(s.branch);
+  if (!silent) status("queue-status", "info", "Loading queue...");
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + QUEUE_PATH +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (r) {
+    queueState.sha = r.sha;
+    var parsed = JSON.parse(b64decode(r.content));
+    queueState.items = parsed.items || [];
+    if (!silent) { renderQueue(); el("queue-status").className = "status"; }
+  }).catch(function (e) {
+    if (!silent) status("queue-status", "err", "Could not load queue: " + e.message);
+  });
+}
+
+function saveQueue(message) {
+  var s = settings();
+  var content = JSON.stringify({ items: queueState.items }, null, 2) + "\n";
+  var body = { message: message, content: b64encode(content), branch: s.branch };
+  if (queueState.sha) body.sha = queueState.sha;
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + QUEUE_PATH, {
+    method: "PUT", body: JSON.stringify(body)
+  }).then(function (r) { queueState.sha = r.content.sha; });
+}
+
+function renderQueue() {
+  var wrap = el("queue-list");
+  wrap.innerHTML = "";
+  if (!queueState.items.length) {
+    wrap.innerHTML = "<div class='empty'><div class='big'>Nothing scheduled yet</div>" +
+      "Tick a month under Auto Posts and the queue fills itself." +
+      "<br><button onclick=\"location.hash='#auto'\">Go to Auto Posts</button></div>";
+    return;
+  }
+  var rows = queueState.items.map(function (it) {
+    var when = new Date(it.scheduled_at).toLocaleString();
+    var cls = it.status === "posted" ? "ok" : (it.status === "error" ? "err" : "run");
+    var cap = it.caption ? esc(it.caption.slice(0, 60)) : "(no caption)";
+    var type = (it.post_type === "story") ? "story" : (it.is_video ? "reel" : "image");
+    var plats = (it.platforms || PLATFORMS).filter(function (p) {
+      return PLATFORMS.indexOf(p) >= 0 || it.platforms;
+    }).map(platformIcon).join("");
+    var cancel = (it.status === "pending" || it.status === "error")
+      ? "<button class='danger' data-cancel='" + esc(it.id) + "'>Cancel</button>" : "";
+    return "<tr><td>" + esc(type) + "</td><td>" + plats + "</td><td>" + cap + "</td><td>" + esc(when) + "</td>" +
+      "<td><span class='pill " + cls + "'>" + esc(it.status) + "</span></td>" +
+      "<td>" + cancel + "</td></tr>";
+  }).join("");
+  wrap.innerHTML =
+    "<table><thead><tr><th>Type</th><th>Platforms</th><th>Caption</th><th>When (local)</th><th>Status</th><th></th></tr></thead><tbody>" +
+    rows + "</tbody></table>";
+  wrap.querySelectorAll("[data-cancel]").forEach(function (b) {
+    b.onclick = function () { cancelItem(b.getAttribute("data-cancel")); };
+  });
+}
+
+function cancelItem(id) {
+  var item = queueState.items.find(function (x) { return x.id === id; });
+  if (!item || !confirm("Cancel this scheduled post?")) return;
+  var s = settings();
+  var mediaPath = item.media_path || item.image_path;
+  status("queue-status", "info", "Cancelling...");
+  api("/repos/" + s.owner + "/" + s.repo + "/contents/" + mediaPath +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (f) {
+    return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + mediaPath, {
+      method: "DELETE",
+      body: JSON.stringify({ message: "Cancel " + id, sha: f.sha, branch: s.branch })
+    });
+  }).catch(function () { /* media may already be gone */ }).then(function () {
+    queueState.items = queueState.items.filter(function (x) { return x.id !== id; });
+    return saveQueue("Cancel scheduled post " + id);
+  }).then(function () {
+    status("queue-status", "ok", "Cancelled.");
+    renderQueue();
+  }).catch(function (e) {
+    status("queue-status", "err", "Failed: " + e.message);
+    loadQueue();
+  });
+}
+
+el("reload-queue").onclick = function () { loadQueue(); };
+el("run-queue").onclick = function () {
+  status("queue-status", "info", "Triggering the queue processor...");
+  var s = settings();
+  api("/repos/" + s.owner + "/" + s.repo + "/actions/workflows/" + SCHEDULER_FILE + "/dispatches", {
+    method: "POST", body: JSON.stringify({ ref: s.branch })
+  }).then(function () {
+    status("queue-status", "ok", "Queue processor triggered. Due posts will go out shortly.");
+    setTimeout(function () { loadQueue(); }, 5000);
+  }).catch(function (e) { status("queue-status", "err", "Failed: " + e.message); });
+};
+
+// ---- Auto posts: campaigns config ----
+var configState = { campaigns: {}, sha: null };
+var campaignsData = [];
+
+function pad2(n) { return (n < 10 ? "0" : "") + n; }
+function utcToLocal(dateStr, hhmm) {
+  var d = new Date((dateStr || new Date().toISOString().slice(0, 10)) + "T" + hhmm + ":00Z");
+  return pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+}
+function localToUtc(dateStr, hhmm) {
+  var d = new Date((dateStr || new Date().toISOString().slice(0, 10)) + "T" + hhmm + ":00");
+  return d.toISOString().slice(11, 16);
+}
+function isMediaName(name) { return /\.(jpe?g|png|webp|mp4|mov)$/i.test(name); }
+function ghFolderLink(path) {
+  var s = settings();
+  return "https://github.com/" + s.owner + "/" + s.repo + "/tree/" +
+    encodeURIComponent(s.branch) + "/" + path.split("/").map(encodeURIComponent).join("/");
+}
+function spacingLabel(count) {
+  if (count <= 0) return "-";
+  if (count === 1) return "single";
+  if (count === 2) return "6h apart";
+  if (count === 3) return "4h apart";
+  return "3h apart";
+}
+
+function loadConfig() {
+  var s = settings();
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + CAMPAIGNS_PATH +
+      "?ref=" + encodeURIComponent(s.branch)).then(function (r) {
+    configState.sha = r.sha;
+    configState.campaigns = (JSON.parse(b64decode(r.content)).campaigns) || {};
+  }).catch(function () {
+    configState.sha = null;
+    configState.campaigns = {};
+  });
+}
+
+function saveConfig(message) {
+  var s = settings();
+  var body = {
+    message: message,
+    content: b64encode(JSON.stringify({ campaigns: configState.campaigns }, null, 2) + "\n"),
+    branch: s.branch
+  };
+  if (configState.sha) body.sha = configState.sha;
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + CAMPAIGNS_PATH, {
+    method: "PUT", body: JSON.stringify(body)
+  }).then(function (r) { configState.sha = r.content.sha; });
+}
+
+function folderKindJS(name) {
+  if (/^posts?$/i.test(name)) return "feed";
+  if (/^stor(y|ies)$/i.test(name)) return "story";
+  return null;
+}
+function isTopDayName(name) { return /^day\s*\d+$/i.test(name); }
+function naturalKey(text) {
+  return String(text).toLowerCase().split(/(\d+)/).map(function (t) {
+    return /^\d+$/.test(t) ? t.padStart(12, "0") : t;
+  }).join("");
+}
+
+function loadCampaigns() {
+  var s = settings();
+  status("content-status", "info", "Loading campaigns...");
+  return api("/repos/" + s.owner + "/" + s.repo + "/git/trees/" +
+      encodeURIComponent(s.branch) + "?recursive=1").then(function (res) {
+    var camps = {};
+    (res.tree || []).forEach(function (node) {
+      if (node.type !== "blob") return;
+      var parts = node.path.split("/");
+      if (parts[0] !== "content" || parts.length < 4) return;
+      var file = parts[parts.length - 1];
+      var kindDir = parts[parts.length - 2];
+      var kind = folderKindJS(kindDir);
+      if (!kind) return;
+      var dayParts = parts.slice(1, parts.length - 2);
+      if (!dayParts.length) return;
+      var name = (dayParts.length === 1 && isTopDayName(dayParts[0])) ? "" : dayParts[0];
+      var dayRel = dayParts.join("/");
+      var rel = name ? dayParts.slice(1).join("/") : dayRel;
+      var label = rel || name || dayRel;
+      if (!camps[name]) {
+        camps[name] = { name: name, path: name ? "content/" + name : "content", days: {} };
+      }
+      var days = camps[name].days;
+      if (!days[dayRel]) days[dayRel] = { label: label, rel: rel, sortKey: dayRel,
+                                          posts: 0, stories: 0, postDir: "", storyDir: "" };
+      if (kind === "feed") days[dayRel].postDir = kindDir; else days[dayRel].storyDir = kindDir;
+      if (!isMediaName(file)) return;
+      if (kind === "feed") days[dayRel].posts++; else days[dayRel].stories++;
+    });
+    campaignsData = Object.keys(camps).map(function (name) {
+      var c = camps[name];
+      var days = Object.keys(c.days).map(function (k) { return c.days[k]; })
+        .sort(function (a, b) { return naturalKey(a.sortKey) < naturalKey(b.sortKey) ? -1 : 1; })
+        .map(function (d, i) { return { n: i + 1, name: d.label, rel: d.rel,
+                 posts: d.posts, stories: d.stories,
+                 postDir: d.postDir, storyDir: d.storyDir }; });
+      return { name: c.name, path: c.path, days: days };
+    }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+    el("content-status").className = "status";
+    renderCampaigns();
+  }).catch(function (e) {
+    campaignsData = [];
+    renderCampaigns();
+    status("content-status", "err",
+      "Could not read content tree (" + e.message + "). Create a campaign below.");
+  });
+}
+
+function monthKeyOf(day) {
+  var parts = (day.rel || "").split("/").filter(Boolean);
+  return parts.length > 1 ? parts[0] : "";
+}
+
+function monthsOf(c) {
+  var order = [], byKey = {};
+  c.days.forEach(function (d) {
+    var k = monthKeyOf(d);
+    if (!byKey[k]) { byKey[k] = []; order.push(k); }
+    byKey[k].push(d);
+  });
+  return order.map(function (k) { return { key: k, days: byKey[k] }; });
+}
+
+function renderCampaigns() {
+  var wrap = el("campaign-list");
+  if (!campaignsData.length) {
+    wrap.innerHTML = "<div class='empty'><div class='big'>No campaigns yet</div>" +
+      "Create one below, then bulk-upload a month of photos and switch it on.</div>";
+    return;
+  }
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  wrap.innerHTML = campaignsData.map(function (c, ci) {
+    var cfg = configState.campaigns[c.name] || {};
+    var batches = cfg.batches || {};
+    var pt = utcToLocal("", cfg.posts_time_utc || "07:00");
+    var st = utcToLocal("", cfg.stories_time_utc || "10:00");
+
+    var monthsHtml = monthsOf(c).map(function (m, mi) {
+      var mcfg = batches[m.key] || {};
+      var enabled = ("enabled" in mcfg) ? !!mcfg.enabled : (!Object.keys(batches).length && !!cfg.enabled);
+      var approved = ("approved" in mcfg) ? !!mcfg.approved : true;
+      var start = mcfg.start_date || (!Object.keys(batches).length ? (cfg.start_date || "") : "");
+      var plats = mcfg.platforms || cfg.platforms || PLATFORMS.slice();
+      var startD = start ? new Date(start + "T00:00:00") : null;
+      var posts = 0, stories = 0;
+      m.days.forEach(function (d) { posts += d.posts; stories += d.stories; });
+
+      var rows = m.days.map(function (d, di) {
+        var dl = "-", state = "set a date", cls = "run";
+        if (startD) {
+          var dt = new Date(startD); dt.setDate(dt.getDate() + di);
+          dl = dt.toDateString();
+          if (dt < today) { state = "past"; cls = "err"; }
+          else if (dt.getTime() === today.getTime()) { state = "today"; cls = "ok"; }
+          else { state = "upcoming"; cls = "run"; }
+        }
+        var label = m.key ? d.name.replace(m.key + "/", "") : (d.name || "(campaign root)");
+        return "<tr><td>" + esc(label) + "</td><td>" + esc(dl) + "</td>" +
+          "<td>" + d.posts + " (" + spacingLabel(d.posts) + ")</td>" +
+          "<td>" + d.stories + " (" + spacingLabel(d.stories) + ")</td>" +
+          "<td><span class='pill " + cls + "'>" + esc(state) + "</span></td></tr>";
+      }).join("");
+
+      var platBoxes = PLATFORMS.map(function (p) {
+        return "<label>" +
+          "<input type='checkbox' class='mb-plat' data-c='" + ci + "' data-m='" + mi + "' value='" + p + "'" +
+          (plats.indexOf(p) >= 0 ? " checked" : "") + ">" +
+          platformIcon(p) + PLATFORM_LABELS[p] + "</label>";
+      }).join("");
+
+      return "<div class='month " + (enabled ? "on" : "off") + "' data-mkey='" + esc(m.key) + "'>" +
+        "<div class='mhead'>" +
+        "<label style='display:flex;align-items:center;gap:8px;margin:0;'>" +
+        "<input type='checkbox' class='mb-en' data-c='" + ci + "' data-m='" + mi + "'" +
+        (enabled ? " checked" : "") + ">" +
+        "<span class='mname'>" + esc(m.key || "Ungrouped days") + "</span></label>" +
+        "<span class='mcount'>" + m.days.length + " day(s), " + posts + " post(s), " +
+        stories + " story(ies)</span>" +
+        "<span class='pill " + (!enabled ? "run" : (approved ? "ok" : "err")) + "'>" +
+        (!enabled ? "off" : (approved ? "posting" : "awaiting approval")) + "</span>" +
+        "</div>" +
+        "<div class='row' style='margin-top:8px;'>" +
+        "<div><label>Start date (first day of this month batch)</label>" +
+        "<input type='date' class='mb-start' data-c='" + ci + "' data-m='" + mi + "' value='" + esc(start) + "'></div>" +
+        "</div>" +
+        "<div class='platchecks'>" + platBoxes + "</div>" +
+        "<label class='approve-row' style='display:flex;align-items:center;gap:8px;margin-top:8px;' " +
+        "data-tip='Content is only published after you approve it. Untick to hold a month for review even while it is on.'>" +
+        "<input type='checkbox' class='mb-approve' data-c='" + ci + "' data-m='" + mi + "'" +
+        (approved ? " checked" : "") + ">" +
+        "<span>Approved to post</span></label>" +
+        "<details><summary>Day-by-day plan</summary>" +
+        "<table><thead><tr><th>Day</th><th>Posts on</th><th>Feed</th><th>Stories</th><th>State</th></tr></thead><tbody>" +
+        rows + "</tbody></table></details>" +
+        "</div>";
+    }).join("");
+
+    return "<div class='flow'><h3>" + esc(c.name) + "</h3>" +
+      "<div class='row'>" +
+      "<div><label>Posts time (local)</label><input type='time' class='cf-pt' data-i='" + ci + "' value='" + esc(pt) + "'></div>" +
+      "<div><label>Stories time (local)</label><input type='time' class='cf-st' data-i='" + ci + "' value='" + esc(st) + "'></div>" +
+      "</div>" +
+      (monthsHtml || "<p class='note'>No day folders yet. Use bulk upload below to add a month of content.</p>") +
+      "<div class='checks' style='margin-top:10px;'>" +
+      "<a href='" + ghFolderLink(c.path) + "' target='_blank' rel='noopener'>Open folder on GitHub</a></div>" +
+      "<div class='btnrow'><button data-save='" + ci + "' data-tip='Save the month checkboxes, dates and platforms'>Save campaign</button>" +
+      "<button class='ghost' data-newday='" + ci + "' data-tip='Add an empty next-day folder in this campaign'>Create next day</button></div>" +
+      "</div>";
+  }).join("");
+
+  wrap.querySelectorAll("[data-save]").forEach(function (b) {
+    b.onclick = function () { saveCampaign(+b.getAttribute("data-save")); };
+  });
+  wrap.querySelectorAll("[data-newday]").forEach(function (b) {
+    b.onclick = function () { createNextDay(+b.getAttribute("data-newday")); };
+  });
+  updateBulkDatalist();
+}
+
+function saveCampaign(ci) {
+  var c = campaignsData[ci];
+  var months = monthsOf(c);
+  var cfg = configState.campaigns[c.name] || {};
+  var batches = {};
+  var problems = [];
+  var anyOn = false;
+
+  months.forEach(function (m, mi) {
+    var en = document.querySelector(".mb-en[data-c='" + ci + "'][data-m='" + mi + "']").checked;
+    var start = document.querySelector(".mb-start[data-c='" + ci + "'][data-m='" + mi + "']").value;
+    var approveBox = document.querySelector(".mb-approve[data-c='" + ci + "'][data-m='" + mi + "']");
+    var approved = approveBox ? approveBox.checked : true;
+    var plats = [];
+    document.querySelectorAll(".mb-plat[data-c='" + ci + "'][data-m='" + mi + "']").forEach(function (b) {
+      if (b.checked) plats.push(b.value);
+    });
+    if (en && !start) problems.push((m.key || "Ungrouped days") + " needs a start date");
+    if (en && !plats.length) problems.push((m.key || "Ungrouped days") + " needs at least one platform");
+    if (en) anyOn = true;
+    batches[m.key] = { enabled: en, approved: approved, start_date: start, platforms: plats };
+  });
+  if (problems.length) {
+    status("content-status", "err", "Fix before saving: " + problems.join("; ") + ".");
+    return;
+  }
+
+  configState.campaigns[c.name] = {
+    enabled: false,
+    start_date: cfg.start_date || "",
+    posts_time_utc: localToUtc("", document.querySelector(".cf-pt[data-i='" + ci + "']").value || "09:00"),
+    stories_time_utc: localToUtc("", document.querySelector(".cf-st[data-i='" + ci + "']").value || "12:00"),
+    platforms: cfg.platforms || PLATFORMS.slice(),
+    batches: batches
+  };
+  status("content-status", "info", "Saving " + c.name + "...");
+  saveConfig("Update campaign: " + c.name).then(function () {
+    status("content-status", "ok", anyOn
+      ? c.name + " saved. Checked month(s) will post on their start dates."
+      : c.name + " saved (all months off).");
+    renderCampaigns();
+  }).catch(function (e) { status("content-status", "err", "Save failed: " + e.message); });
+}
+
+function dayPattern(c) {
+  var fallback = {
+    make: function (n) { return "day" + n; },
+    nextNum: (c && c.days.length ? c.days.length + 1 : 1),
+    postDir: "posts", storyDir: "stories"
+  };
+  if (!c || !c.days.length) return fallback;
+  var last = c.days[c.days.length - 1];
+  if (!last.rel) return fallback;
+  var segs = last.rel.split("/");
+  var leaf = segs.pop();
+  var parent = segs.join("/");
+  var m = leaf.match(/^(.*?)(\d+)(\D*)$/);
+  return {
+    make: m
+      ? function (n) { return (parent ? parent + "/" : "") + m[1] + n + m[3]; }
+      : function (n) { return (parent ? parent + "/" : "") + leaf + " " + n; },
+    nextNum: m ? parseInt(m[2], 10) + 1 : c.days.length + 1,
+    postDir: last.postDir || "posts",
+    storyDir: last.storyDir || "stories"
+  };
+}
+
+function createNextDay(ci) {
+  var c = campaignsData[ci];
+  var pat = dayPattern(c);
+  var dayName = pat.make(pat.nextNum);
+  var keep = b64encode("Placeholder so the folder exists. Safe to leave.\n");
+  var base = c.path + "/" + dayName;
+  status("content-status", "info", "Creating " + base + "...");
+  putFile(base + "/" + pat.postDir + "/.gitkeep", keep, "Create " + c.name + " " + dayName + " posts")
+    .then(function () { return putFile(base + "/" + pat.storyDir + "/.gitkeep", keep, "Create " + c.name + " " + dayName + " stories"); })
+    .then(function () {
+      status("content-status", "ok", "Created " + base + "/" + pat.postDir + " and /" + pat.storyDir + ".");
+      loadCampaigns();
+    }).catch(function (e) { status("content-status", "err", "Failed: " + e.message); });
+}
+
+el("create-campaign").onclick = function () {
+  var name = el("new-campaign-name").value.trim();
+  if (!name) { status("content-status", "err", "Enter a campaign name."); return; }
+  if (/[\\:*?"<>|]/.test(name)) { status("content-status", "err", "Name has characters GitHub can't use in a path."); return; }
+  var keep = b64encode("Placeholder so the folder exists. Safe to leave.\n");
+  var base = "content/" + name + "/Month 1/Day 1";
+  status("content-status", "info", "Creating campaign " + name + "...");
+  putFile(base + "/Post/.gitkeep", keep, "Create campaign " + name)
+    .then(function () { return putFile(base + "/Story/.gitkeep", keep, "Create campaign " + name + " stories"); })
+    .then(function () {
+      configState.campaigns[name] = { enabled: false, start_date: "",
+        posts_time_utc: "07:00", stories_time_utc: "10:00",
+        platforms: PLATFORMS.slice(),
+        batches: { "Month 1": { enabled: false, start_date: "", platforms: PLATFORMS.slice() } } };
+      return saveConfig("Register campaign: " + name);
+    }).then(function () {
+      el("new-campaign-name").value = "";
+      status("content-status", "ok", "Created campaign " + name + " with Month 1/Day 1. Bulk-upload content, set the month's date, tick it, and Save.");
+      loadCampaigns();
+    }).catch(function (e) { status("content-status", "err", "Failed: " + e.message); });
+};
+
+function putFile(path, base64Content, message) {
+  var s = settings();
+  return api("/repos/" + s.owner + "/" + s.repo + "/contents/" + path, {
+    method: "PUT",
+    body: JSON.stringify({ message: message, content: base64Content, branch: s.branch })
+  });
+}
+
+function fileToJpeg(file, outW, outH) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function () {
+      URL.revokeObjectURL(url);
+      var canvas = document.createElement("canvas");
+      canvas.width = outW; canvas.height = outH;
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, outW, outH);
+      var scale = Math.min(outW / img.width, outH / img.height);
+      var w = img.width * scale, h = img.height * scale;
+      ctx.drawImage(img, (outW - w) / 2, (outH - h) / 2, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.9).split(",")[1]);
+    };
+    img.onerror = function () { reject(new Error("Could not read image")); };
+    img.src = url;
+  });
+}
+
+// Bulk upload: many files in one commit via the Git Data API.
+async function bulkCommit(files, message) {
+  var s = settings();
+  var repo = "/repos/" + s.owner + "/" + s.repo;
+  var ref = await api(repo + "/git/ref/heads/" + s.branch);
+  var headSha = ref.object.sha;
+  var headCommit = await api(repo + "/git/commits/" + headSha);
+  var tree = [];
+  for (var i = 0; i < files.length; i++) {
+    var blob = await api(repo + "/git/blobs", {
+      method: "POST",
+      body: JSON.stringify({ content: files[i].base64, encoding: "base64" })
+    });
+    tree.push({ path: files[i].path, mode: "100644", type: "blob", sha: blob.sha });
+  }
+  var newTree = await api(repo + "/git/trees", {
+    method: "POST",
+    body: JSON.stringify({ base_tree: headCommit.tree.sha, tree: tree })
+  });
+  var commit = await api(repo + "/git/commits", {
+    method: "POST",
+    body: JSON.stringify({ message: message, tree: newTree.sha, parents: [headSha] })
+  });
+  await api(repo + "/git/refs/heads/" + s.branch, {
+    method: "PATCH", body: JSON.stringify({ sha: commit.sha })
+  });
+  return commit.sha;
+}
+
+function textToBase64(str) { return b64encode(str); }
+
+function updateBulkDatalist() {
+  el("bulk-campaign-list").innerHTML = campaignsData.map(function (c) {
+    return "<option value=\"" + esc(c.name) + "\">";
+  }).join("");
+  if (el("bulk-campaign").value.trim()) refreshBulkMonth();
+}
+
+function monthPattern(c, monthKey) {
+  var mdays = c ? c.days.filter(function (d) { return monthKeyOf(d) === monthKey; }) : [];
+  var sample = mdays.length ? mdays : (c ? c.days.filter(function (d) { return monthKeyOf(d); }) : []);
+  var style = { prefix: "Day ", suffix: "", postDir: "Post", storyDir: "Story" };
+  if (sample.length) {
+    var last = sample[sample.length - 1];
+    var leaf = (last.rel || "").split("/").pop() || "";
+    var m = leaf.match(/^(.*?)(\d+)(\D*)$/);
+    if (m) { style.prefix = m[1]; style.suffix = m[3]; }
+    style.postDir = last.postDir || style.postDir;
+    style.storyDir = last.storyDir || style.storyDir;
+  } else if (c && c.days.length && !c.days.some(function (d) { return monthKeyOf(d); })) {
+    var pat = dayPattern(c);
+    return { nextNum: pat.nextNum, make: function (n) { return pat.make(n); },
+             postDir: pat.postDir, storyDir: pat.storyDir };
+  }
+  var nextNum = 1;
+  if (mdays.length) {
+    var leafLast = (mdays[mdays.length - 1].rel || "").split("/").pop() || "";
+    var mm = leafLast.match(/(\d+)(?!.*\d)/);
+    nextNum = mm ? parseInt(mm[1], 10) + 1 : mdays.length + 1;
+  }
+  return {
+    nextNum: nextNum,
+    make: function (n) { return (monthKey ? monthKey + "/" : "") + style.prefix + n + style.suffix; },
+    postDir: style.postDir, storyDir: style.storyDir
+  };
+}
+
+function suggestedNextMonth(c) {
+  if (!c) return "Month 1";
+  var maxN = 0, sawMonth = false;
+  c.days.forEach(function (d) {
+    var k = monthKeyOf(d);
+    if (!k) return;
+    sawMonth = true;
+    var m = k.match(/(\d+)(?!.*\d)/);
+    if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
+  });
+  if (!sawMonth) return "Month 1";
+  return maxN ? "Month " + (maxN + 1) : "Month 1";
+}
+
+function refreshBulkMonth() {
+  var name = el("bulk-campaign").value.trim();
+  var found = campaignsData.filter(function (c) { return c.name === name; })[0];
+  var monthKeys = [];
+  if (found) {
+    monthsOf(found).forEach(function (m) { if (m.key) monthKeys.push(m.key); });
+  }
+  var next = suggestedNextMonth(found);
+  el("bulk-month-list").innerHTML = monthKeys.concat(monthKeys.indexOf(next) < 0 ? [next] : [])
+    .map(function (k) { return "<option value=\"" + esc(k) + "\">"; }).join("");
+  if (!el("bulk-month").value.trim()) el("bulk-month").value = next;
+  var pat = monthPattern(found, el("bulk-month").value.trim());
+  el("bulk-startday").value = pat.nextNum;
+}
+
+el("bulk-campaign").oninput = refreshBulkMonth;
+el("bulk-month").oninput = function () {
+  var name = el("bulk-campaign").value.trim();
+  var found = campaignsData.filter(function (c) { return c.name === name; })[0];
+  el("bulk-startday").value = monthPattern(found, el("bulk-month").value.trim()).nextNum;
+};
+
+function computeBulkPlan() {
+  var posts = Array.prototype.slice.call(el("bulk-posts").files);
+  var stories = Array.prototype.slice.call(el("bulk-stories").files);
+  var ppd = parseInt(el("bulk-ppd").value, 10);
+  var spd = parseInt(el("bulk-spd").value, 10);
+  var startDay = Math.max(1, parseInt(el("bulk-startday").value, 10) || 1);
+  var numDays = Math.max(Math.ceil(posts.length / ppd), Math.ceil(stories.length / spd));
+  var days = [];
+  for (var i = 0; i < numDays; i++) {
+    days.push({
+      day: startDay + i,
+      posts: posts.slice(i * ppd, (i + 1) * ppd),
+      stories: stories.slice(i * spd, (i + 1) * spd)
+    });
+  }
+  return { days: days, totalPosts: posts.length, totalStories: stories.length };
+}
+
+el("bulk-plan").onclick = function () {
+  var plan = computeBulkPlan();
+  if (!plan.days.length) { el("bulk-plan-out").textContent = "Choose some images first."; return; }
+  var name = el("bulk-campaign").value.trim();
+  var found = campaignsData.filter(function (c) { return c.name === name; })[0];
+  var pat = monthPattern(found, el("bulk-month").value.trim());
+  var lines = plan.days.map(function (d) {
+    return pat.make(d.day) + ": " + d.posts.length + " post(s), " + d.stories.length + " story(ies)";
+  });
+  el("bulk-plan-out").textContent =
+    plan.totalPosts + " feed + " + plan.totalStories + " story image(s) -> " +
+    plan.days.length + " day(s)\n" + lines.join("\n");
+};
+
+el("bulk-upload").onclick = async function () {
+  var s = settings();
+  saveSettings();
+  var name = el("bulk-campaign").value.trim();
+  if (!name) { status("content-status", "err", "Enter a campaign name for the bulk upload."); return; }
+  if (/[\\:*?"<>|]/.test(name)) { status("content-status", "err", "Campaign name has characters GitHub can't use."); return; }
+  var plan = computeBulkPlan();
+  if (!plan.days.length) { status("content-status", "err", "Choose some images first."); return; }
+
+  status("content-status", "info", "Converting images...");
+  try {
+    var existing = campaignsData.filter(function (c) { return c.name === name; })[0];
+    var monthKey = el("bulk-month").value.trim();
+    var pat = monthPattern(existing, monthKey);
+    var stamp = Date.now();
+    var files = [];
+    for (var i = 0; i < plan.days.length; i++) {
+      var d = plan.days[i];
+      var dayBase = "content/" + name + "/" + pat.make(d.day);
+      for (var p = 0; p < d.posts.length; p++) {
+        files.push({
+          path: dayBase + "/" + pat.postDir + "/bulk-" + stamp + "-" + i + "-p" + p + ".jpg",
+          base64: await fileToJpeg(d.posts[p], SQUARE, SQUARE)
+        });
+      }
+      for (var q = 0; q < d.stories.length; q++) {
+        files.push({
+          path: dayBase + "/" + pat.storyDir + "/bulk-" + stamp + "-" + i + "-s" + q + ".jpg",
+          base64: await fileToJpeg(d.stories[q], 1080, 1920)
+        });
+      }
+    }
+    var cfg = configState.campaigns[name] || { enabled: false, start_date: "",
+      posts_time_utc: "07:00", stories_time_utc: "10:00",
+      platforms: PLATFORMS.slice(), batches: {} };
+    cfg.batches = cfg.batches || {};
+    if (!cfg.batches[monthKey]) {
+      cfg.batches[monthKey] = { enabled: false, start_date: "",
+        platforms: (cfg.platforms || PLATFORMS).slice() };
+    }
+    configState.campaigns[name] = cfg;
+    files.push({
+      path: CAMPAIGNS_PATH,
+      base64: textToBase64(JSON.stringify({ campaigns: configState.campaigns }, null, 2) + "\n")
+    });
+    status("content-status", "info", "Uploading " + files.length + " file(s) in one commit...");
+    await bulkCommit(files, "Bulk upload " + files.length + " file(s) to " + name +
+      (monthKey ? " / " + monthKey : ""));
+    status("content-status", "ok",
+      "Uploaded " + plan.totalPosts + " feed + " + plan.totalStories + " story image(s) across " +
+      plan.days.length + " day(s) in " + name + (monthKey ? " / " + monthKey : "") +
+      ". Now set the month's start date, pick platforms, tick its checkbox, and Save.");
+    el("bulk-posts").value = ""; el("bulk-stories").value = "";
+    el("bulk-plan-out").textContent = "";
+    loadConfig().then(loadCampaigns);
+  } catch (e) {
+    status("content-status", "err", "Bulk upload failed: " + e.message);
+  }
+};
+
+el("reload-content").onclick = function () { loadConfig().then(loadCampaigns); };
+el("run-content").onclick = function () {
+  var s = settings();
+  status("content-status", "info", "Triggering the publisher...");
+  api("/repos/" + s.owner + "/" + s.repo + "/actions/workflows/" + SCHEDULER_FILE + "/dispatches", {
+    method: "POST", body: JSON.stringify({ ref: s.branch })
+  }).then(function () {
+    status("content-status", "ok", "Publisher triggered. New files are converted, queued, and due items post now.");
+    setTimeout(function () { loadQueue(true); loadCampaigns(); }, 6000);
+  }).catch(function (e) { status("content-status", "err", "Failed: " + e.message); });
+};
+
+// ---- Companies ----
+function companies() {
+  var list;
+  try { list = JSON.parse(localStorage.getItem("bpa_companies") || "[]"); }
+  catch (e) { list = []; }
+  if (!list.length) {
+    // Gwalava ships pre-loaded as the first company.
+    list = [{ name: "Gwalava Boards", owner: DEFAULTS.owner, repo: DEFAULTS.repo,
+              branch: DEFAULTS.branch, token: "" }];
+    localStorage.setItem("bpa_companies", JSON.stringify(list));
+  }
+  return list;
+}
+function saveCompanies(list) {
+  localStorage.setItem("bpa_companies", JSON.stringify(list));
+}
+
+function renderCompanies() {
+  var list = companies();
+  var s = settings();
+  var wrap = el("company-list");
+  wrap.innerHTML = list.map(function (c, i) {
+    var repoUrl = "https://github.com/" + c.owner + "/" + c.repo;
+    var pagesUrl = "https://" + c.owner.toLowerCase() + ".github.io/" + c.repo + "/";
+    var active = (c.owner === s.owner && c.repo === s.repo);
+    var prog = wizardProgress(c);
+    var runPill = active && automationState.loaded
+      ? " <span class='pill " + (automationState.paused ? "err" : "ok") + "'>" +
+        (automationState.paused ? "paused" : "running") + "</span>"
+      : "";
+    return "<div class='company'><h3>" + esc(c.name) +
+      (active ? " <span class='pill run'>active</span>" : "") + runPill + "</h3>" +
+      "<div class='meta'>" + esc(c.owner + "/" + c.repo) + " (" + esc(c.branch) + ")" +
+      "  -  setup " + prog.done + "/" + prog.total + " steps verified" +
+      (prog.done >= prog.total ? "  -  ready" : "  -  finish Guided setup") + "</div>" +
+      "<div class='links'>" +
+      "<a href='" + repoUrl + "' target='_blank' rel='noopener'>Repo</a>" +
+      "<a href='" + repoUrl + "/settings/secrets/actions' target='_blank' rel='noopener'>Secrets</a>" +
+      "<a href='" + repoUrl + "/settings/pages' target='_blank' rel='noopener'>Pages setup</a>" +
+      "<a href='" + repoUrl + "/actions' target='_blank' rel='noopener'>Actions</a>" +
+      "<a href='" + pagesUrl + "' target='_blank' rel='noopener'>Hosted dashboard</a>" +
+      "</div>" +
+      "<div class='btnrow'>" +
+      "<button data-open='" + i + "' data-tip='Make this the active company across the dashboard'>Switch to</button>" +
+      "<button class='ghost' data-wizard='" + i + "' data-tip='Connect GitHub, Facebook, Instagram and Pages step by step'>Guided setup</button>" +
+      "<button class='danger' data-del='" + i + "' data-tip='Remove from this list only; the repository is not touched'>Remove</button>" +
+      "</div></div>";
+  }).join("");
+
+  wrap.querySelectorAll("[data-open]").forEach(function (b) {
+    b.onclick = function () {
+      var c = companies()[+b.getAttribute("data-open")];
+      el("owner").value = c.owner;
+      el("repo").value = c.repo;
+      el("branch").value = c.branch;
+      if (c.token) el("token").value = c.token;
+      saveSettings(c.name);
+      updateBadge(c.name);
+      automationState.loaded = false;
+      status("companies-status", "ok", "Switched to " + c.name + ".");
+      location.hash = "#dashboard";
+      route();
+    };
+  });
+  wrap.querySelectorAll("[data-wizard]").forEach(function (b) {
+    b.onclick = function () { openWizard(+b.getAttribute("data-wizard")); };
+  });
+  wrap.querySelectorAll("[data-del]").forEach(function (b) {
+    b.onclick = function () {
+      var list = companies();
+      var c = list[+b.getAttribute("data-del")];
+      if (!confirm("Remove " + c.name + " from this list? (The repository itself is not touched.)")) return;
+      list.splice(+b.getAttribute("data-del"), 1);
+      saveCompanies(list);
+      renderCompanies();
+    };
+  });
+}
+
+el("add-existing").onclick = function () {
+  var name = prompt("Company name (shown on the dashboard):", "");
+  if (!name) return;
+  var owner = prompt("GitHub owner:", DEFAULTS.owner);
+  if (!owner) return;
+  var repo = prompt("Repository name:", "");
+  if (!repo) return;
+  var branch = prompt("Branch:", "main");
+  if (!branch) return;
+  var token = prompt("GitHub token for this repo (stored only in this browser; blank to fill in later):", "") || "";
+  var list = companies();
+  list.push({ name: name, owner: owner, repo: repo, branch: branch, token: token });
+  saveCompanies(list);
+  renderCompanies();
+};
+
+// ---- Company list backup / restore (portable durable registry) ----
+el("export-companies").onclick = function () {
+  var payload = { type: "bpa_companies", version: 1,
+    exported_at: new Date().toISOString(), companies: companies() };
+  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "companies-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  status("companies-status", "ok", "Backed up " + companies().length + " company(ies). Store the file privately - it contains tokens.");
+};
+el("import-companies").onclick = function () { el("import-file").click(); };
+el("import-file").onchange = function () {
+  var file = this.files && this.files[0];
+  this.value = "";
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function () {
+    var incoming;
+    try {
+      var parsed = JSON.parse(reader.result);
+      incoming = Array.isArray(parsed) ? parsed : parsed.companies;
+    } catch (e) { incoming = null; }
+    if (!Array.isArray(incoming)) {
+      status("companies-status", "err", "That file is not a valid company backup.");
+      return;
+    }
+    var list = companies();
+    var key = function (c) { return (c.owner + "/" + c.repo + "/" + (c.branch || "main")).toLowerCase(); };
+    var seen = {};
+    list.forEach(function (c) { seen[key(c)] = true; });
+    var added = 0;
+    incoming.forEach(function (c) {
+      if (!c || !c.owner || !c.repo) return;
+      var k = key(c);
+      if (seen[k]) return;
+      seen[k] = true;
+      list.push({ name: c.name || (c.owner + "/" + c.repo), owner: c.owner,
+        repo: c.repo, branch: c.branch || "main", token: c.token || "" });
+      added++;
+    });
+    saveCompanies(list);
+    renderCompanies();
+    status("companies-status", "ok", "Restored " + added + " new company(ies) (duplicates skipped).");
+  };
+  reader.readAsText(file);
+};
+
+// ---- Admin: add company (creates the repo on main) ----
+var TEMPLATE = { owner: "Marshall-007", repo: "Business-Posts-automation" };
+
+el("nc-name").oninput = function () {
+  if (!el("nc-repo").value.trim() || el("nc-repo").dataset.auto !== "0") {
+    el("nc-repo").value = sanitizeRepoName(el("nc-name").value);
+    el("nc-repo").dataset.auto = "1";
+  }
+};
+el("nc-repo").onchange = function () { el("nc-repo").dataset.auto = "0"; };
+
+function sanitizeRepoName(name) {
+  var base = String(name || "").toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return base ? base + "-posts" : "";
+}
+
+function appendLog(id, line) {
+  var s = el(id);
+  s.className = "status show info";
+  s.textContent += (s.textContent ? "\n" : "") + line;
+}
+
+function buildConfigYaml(name, desc, phone, site) {
+  var brandTag = "#" + name.replace(/[^a-zA-Z0-9]+/g, "");
+  return [
+    "# Business profile used to generate posts. Edit everything in this file.",
+    "",
+    "business:",
+    "  name: " + JSON.stringify(name),
+    "  description: >",
+    "    " + (desc || "A great local business.").replace(/\n/g, " "),
+    "  website: " + JSON.stringify(site || ""),
+    '  tone: "friendly, professional, confident"',
+    '  audience: "local customers and businesses"',
+    '  call_to_action: "Visit us or send us a message to learn more."',
+    "",
+    "topics:",
+    '  - "what makes our products and service stand out"',
+    '  - "a look at our latest work"',
+    '  - "why quality matters and saves money long term"',
+    '  - "a common customer question, answered"',
+    "",
+    "hashtags:",
+    '  - "' + brandTag + '"',
+    '  - "#local"',
+    '  - "#quality"',
+    "",
+    "# Public image URLs for the standard post rotation (fill in later).",
+    "image_urls: []",
+    "",
+    "template_posts:",
+    "  - >",
+    "    " + name + ": quality you can rely on. Visit us or send a message to learn more.",
+    "",
+    "# Captions used for automatic campaign posting.",
+    "captions:",
+    "  contact_phone: " + JSON.stringify(phone || ""),
+    "  contact_url: " + JSON.stringify(site || ""),
+    ""
+  ].join("\n");
+}
+
+el("nc-create").onclick = async function () {
+  var name = el("nc-name").value.trim();
+  var repo = el("nc-repo").value.trim() || sanitizeRepoName(name);
+  var desc = el("nc-desc").value.trim();
+  var phone = el("nc-phone").value.trim();
+  var site = el("nc-site").value.trim();
+  var owner = el("nc-owner").value.trim();
+  var token = el("nc-token").value.trim();
+  if (!name || !repo || !owner || !token) {
+    status("nc-status", "err", "Company name, repo name, owner and token are required.");
+    return;
+  }
+  el("nc-create").disabled = true;
+  el("nc-status").textContent = "";
+  try {
+    appendLog("nc-status", "1/7 Marking the template repository...");
+    try {
+      await apiWith(token, "/repos/" + TEMPLATE.owner + "/" + TEMPLATE.repo, {
+        method: "PATCH", body: JSON.stringify({ is_template: true })
+      });
+    } catch (e) { appendLog("nc-status", "    (already a template or no rights: " + e.message + ")"); }
+
+    appendLog("nc-status", "2/7 Creating " + owner + "/" + repo + " from the template...");
+    await apiWith(token, "/repos/" + TEMPLATE.owner + "/" + TEMPLATE.repo + "/generate", {
+      method: "POST",
+      body: JSON.stringify({
+        owner: owner, name: repo, private: false,
+        description: "Automated social posting for " + name
+      })
+    });
+
+    appendLog("nc-status", "3/7 Waiting for GitHub to finish copying...");
+    var info = null;
+    for (var t = 0; t < 15; t++) {
+      await new Promise(function (r) { setTimeout(r, 2500); });
+      try {
+        info = await apiWith(token, "/repos/" + owner + "/" + repo);
+        var tree = await apiWith(token, "/repos/" + owner + "/" + repo +
+          "/git/trees/" + encodeURIComponent(info.default_branch));
+        if (tree && tree.tree && tree.tree.length) break;
+      } catch (e) { /* keep waiting */ }
+    }
+    if (!info) throw new Error("The new repository did not appear in time; check GitHub and retry.");
+    var branch = info.default_branch;
+
+    // The default branch must be main: create it from the copied branch,
+    // switch the default over, and delete the old branch.
+    if (branch !== "main") {
+      appendLog("nc-status", "4/7 Renaming default branch " + branch + " -> main...");
+      var head = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/ref/heads/" + branch);
+      try {
+        await apiWith(token, "/repos/" + owner + "/" + repo + "/git/refs", {
+          method: "POST",
+          body: JSON.stringify({ ref: "refs/heads/main", sha: head.object.sha })
+        });
+      } catch (e) { /* main may already exist */ }
+      await apiWith(token, "/repos/" + owner + "/" + repo, {
+        method: "PATCH", body: JSON.stringify({ default_branch: "main" })
+      });
+      try {
+        await apiWith(token, "/repos/" + owner + "/" + repo + "/git/refs/heads/" + branch, {
+          method: "DELETE"
+        });
+      } catch (e) { /* leave the old branch if deletion is blocked */ }
+      branch = "main";
+    } else {
+      appendLog("nc-status", "4/7 Default branch is already main.");
+    }
+
+    appendLog("nc-status", "5/7 Writing " + name + "'s business profile into config.yaml...");
+    var current = await apiWith(token, "/repos/" + owner + "/" + repo + "/contents/config.yaml?ref=main");
+    await apiWith(token, "/repos/" + owner + "/" + repo + "/contents/config.yaml", {
+      method: "PUT",
+      body: JSON.stringify({
+        message: "Personalize business profile for " + name,
+        content: b64encode(buildConfigYaml(name, desc, phone, site)),
+        sha: current.sha, branch: "main"
+      })
+    });
+
+    appendLog("nc-status", "6/7 Clearing starter content and queue...");
+    var headRef = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/ref/heads/main");
+    var headCommit = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/commits/" + headRef.object.sha);
+    var full = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/trees/main?recursive=1");
+    var changes = (full.tree || []).filter(function (n) {
+      return n.type === "blob" && (
+        n.path.indexOf("content/William Collins Ghost 1/") === 0 ||
+        n.path.indexOf("docs/uploads/") === 0 ||
+        false);
+    }).map(function (n) { return { path: n.path, mode: "100644", type: "blob", sha: null }; });
+    changes.push({ path: "data/queue.json", mode: "100644", type: "blob",
+      content: JSON.stringify({ items: [] }, null, 2) + "\n" });
+    changes.push({ path: "data/campaigns.json", mode: "100644", type: "blob",
+      content: JSON.stringify({ campaigns: {} }, null, 2) + "\n" });
+    changes.push({ path: "data/history.json", mode: "100644", type: "blob",
+      content: JSON.stringify({ posts: [] }, null, 2) + "\n" });
+    changes.push({ path: "data/activity.json", mode: "100644", type: "blob",
+      content: JSON.stringify({ entries: [] }, null, 2) + "\n" });
+    changes.push({ path: "data/automation.json", mode: "100644", type: "blob",
+      content: JSON.stringify({ paused: false }, null, 2) + "\n" });
+    var newTree = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/trees", {
+      method: "POST",
+      body: JSON.stringify({ base_tree: headCommit.tree.sha, tree: changes })
+    });
+    var commit = await apiWith(token, "/repos/" + owner + "/" + repo + "/git/commits", {
+      method: "POST",
+      body: JSON.stringify({ message: "Clean starter data for " + name,
+        tree: newTree.sha, parents: [headRef.object.sha] })
+    });
+    await apiWith(token, "/repos/" + owner + "/" + repo + "/git/refs/heads/main", {
+      method: "PATCH", body: JSON.stringify({ sha: commit.sha })
+    });
+
+    appendLog("nc-status", "7/7 Saving " + name + " to your companies...");
+    var list = companies();
+    var newCompany = { name: name, owner: owner, repo: repo, branch: "main", token: token };
+    list.push(newCompany);
+    saveCompanies(list);
+    appendLog("nc-status", "");
+    appendLog("nc-status", "DONE. " + name + " is live at " + owner + "/" + repo + " on main.");
+    appendLog("nc-status", "Starting Guided setup so you can connect the accounts now...");
+    el("nc-status").className = "status show ok";
+    // One-and-done: jump straight into the wizard for the new company.
+    el("nc-name").value = ""; el("nc-repo").value = "";
+    el("nc-desc").value = ""; el("nc-phone").value = ""; el("nc-site").value = "";
+    renderCompanies();
+    setTimeout(function () { openWizard(companies().length - 1); }, 900);
+  } catch (e) {
+    appendLog("nc-status", "FAILED: " + e.message);
+    el("nc-status").className = "status show err";
+  } finally {
+    el("nc-create").disabled = false;
+  }
+};
+
+// ---- Guided setup wizard ----
+var wizard = { company: null, idx: 0, steps: [], state: {} };
+
+function wizKey(c) { return "bpa_wizard_" + c.owner + "/" + c.repo; }
+function wizState(c) {
+  try { return JSON.parse(localStorage.getItem(wizKey(c)) || "{}"); }
+  catch (e) { return {}; }
+}
+function saveWizState(c, st) { localStorage.setItem(wizKey(c), JSON.stringify(st)); }
+
+function wizardProgress(c) {
+  var st = wizState(c);
+  var done = Object.keys(st.done || {}).length;
+  return { done: done, total: 6 };
+}
+
+function field(id, label, opts) {
+  opts = opts || {};
+  return "<label>" + esc(label) + "</label>" +
+    "<input id='" + id + "' type='" + (opts.masked ? "password" : "text") + "'" +
+    " autocomplete='off' placeholder='" + esc(opts.placeholder || "") + "'" +
+    " value='" + esc(opts.value || "") + "'>";
+}
+
+function secretRow(name) {
+  return "<div class='secretrow'><span class='varname'>" + name + "</span>" +
+    "<button class='copybtn' data-copy='" + name + "'>Copy name</button></div>";
+}
+
+function newSecretLink(c) {
+  return "https://github.com/" + c.owner + "/" + c.repo + "/settings/secrets/actions/new";
+}
+
+// Verify that named secrets exist in the company repo (needs the GH_PAT).
+function checkSecretsExist(c, names) {
+  var tok = wizState(c).ghpat || c.token;
+  if (!tok) return Promise.reject(new Error("Complete the GitHub token step first."));
+  return apiWith(tok, "/repos/" + c.owner + "/" + c.repo + "/actions/secrets?per_page=100")
+    .then(function (r) {
+      var have = (r.secrets || []).map(function (x) { return x.name; });
+      var missing = names.filter(function (n) { return have.indexOf(n) < 0; });
+      if (missing.length) {
+        throw new Error("Not saved in the repo yet: " + missing.join(", ") +
+          ". Use the link above to add each one, then press Save and Verify again.");
+      }
+      return true;
+    });
+}
+
+function metaGet(url) {
+  return fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+    return d;
+  });
+}
+
+function wizToken(c) { return wizState(c).ghpat || c.token || settings().token; }
+
+// Is the company repo ready for GitHub Pages? Pages needs the target branch to
+// exist AND a docs/index.html on it. A brand-new, hand-made repo has neither.
+function repoReadiness(c) {
+  var tok = wizToken(c);
+  if (!tok) return Promise.reject(new Error("Complete the GitHub token step first."));
+  var base = "/repos/" + c.owner + "/" + c.repo;
+  var out = { empty: false, hasBranch: false, hasDocs: false, defaultBranch: null };
+  return apiWith(tok, base).then(function (info) {
+    out.defaultBranch = info.default_branch;
+    return apiWith(tok, base + "/branches/" + encodeURIComponent(c.branch))
+      .then(function () { out.hasBranch = true; })
+      .catch(function () { out.hasBranch = false; });
+  }).then(function () {
+    if (!out.hasBranch) return;
+    return apiWith(tok, base + "/contents/docs/index.html?ref=" + encodeURIComponent(c.branch))
+      .then(function () { out.hasDocs = true; })
+      .catch(function () { out.hasDocs = false; });
+  }).catch(function (e) {
+    // A repo with no commits returns 404 on branches/contents; treat as empty.
+    out.empty = true;
+    return out;
+  }).then(function () {
+    out.ready = out.hasBranch && out.hasDocs;
+    return out;
+  });
+}
+
+// Populate an empty (or code-less) company repo from the template: copies the
+// automation code, workflows and the dashboard (docs/) onto the target branch,
+// seeds clean data and a personalized config.yaml. Skips the heavy starter
+// content and uploads. This is what makes the main branch and /docs exist so
+// GitHub Pages can be turned on.
+async function seedRepoFromTemplate(c, log) {
+  var tok = wizToken(c);
+  if (!tok) throw new Error("Complete the GitHub token step first.");
+  var owner = c.owner, repo = c.repo, branch = c.branch || "main";
+  var tbase = "/repos/" + TEMPLATE.owner + "/" + TEMPLATE.repo;
+  var base = "/repos/" + owner + "/" + repo;
+
+  log("Reading the template...");
+  var tinfo;
+  try {
+    tinfo = await apiWith(tok, tbase);
+  } catch (e) {
+    if (e.status === 401 || /bad credentials/i.test(e.message || "")) {
+      throw new Error("Bad credentials — your GitHub token is invalid or expired. " +
+        "If you recently changed the token's permissions, GitHub generates a new " +
+        "token string. Copy the new value from github.com/settings/personal-access-tokens, " +
+        "then update it in Guided setup step 2 (GitHub token) and try again.");
+    }
+    throw e;
+  }
+  var tree = await apiWith(tok, tbase + "/git/trees/" +
+    encodeURIComponent(tinfo.default_branch) + "?recursive=1");
+  var blobs = (tree.tree || []).filter(function (n) {
+    if (n.type !== "blob") return false;
+    if (n.path.indexOf("content/") === 0) return false;      // skip demo content
+    if (n.path.indexOf("docs/uploads/") === 0) return false; // skip demo uploads
+    return true;
+  });
+  if (!blobs.length) throw new Error("The template has no files to copy.");
+
+  // Pull each template file's bytes into memory once (base64). We keep the
+  // content so we can write it either as a single batch commit (fast) or file
+  // by file (fallback) without re-downloading.
+  log("Copying " + blobs.length + " files from the template...");
+  var files = [];
+  for (var i = 0; i < blobs.length; i++) {
+    var n = blobs[i];
+    var blob = await apiWith(tok, tbase + "/git/blobs/" + n.sha);
+    files.push({ path: n.path, mode: n.mode || "100644", b64: (blob.content || "").replace(/\n/g, "") });
+    if (i % 15 === 14) log("  " + (i + 1) + "/" + blobs.length + " files...");
+  }
+
+  // Personalize config.yaml and start every data file clean.
+  var overrides = {
+    "config.yaml": buildConfigYaml(c.name, "", "", ""),
+    "data/queue.json": JSON.stringify({ items: [] }, null, 2) + "\n",
+    "data/campaigns.json": JSON.stringify({ campaigns: {} }, null, 2) + "\n",
+    "data/history.json": JSON.stringify({ posts: [] }, null, 2) + "\n",
+    "data/activity.json": JSON.stringify({ entries: [] }, null, 2) + "\n",
+    "data/automation.json": JSON.stringify({ paused: false }, null, 2) + "\n"
+  };
+  files = files.filter(function (f) { return !(f.path in overrides); });
+  Object.keys(overrides).forEach(function (p) {
+    files.push({ path: p, mode: "100644", b64: b64encode(overrides[p]) });
+  });
+
+  try {
+    await seedFast(tok, base, branch, c, files, log);
+  } catch (e) {
+    // The most common cause of "Resource not accessible by personal access
+    // token" here is a token that lacks the Workflows permission: the copy
+    // includes .github/workflows files, which a PAT may not write without it.
+    if (e.status === 403 || /not accessible|workflow/i.test(e.message || "")) {
+      throw new Error("GitHub refused the commit: \"" + e.message + "\". This almost " +
+        "always means the token is missing the \"Workflows\" permission, which is " +
+        "required to copy the automation workflow files. Open your token at " +
+        "github.com/settings/personal-access-tokens, set \"Workflows\" to Read and write " +
+        "(keep Actions, Contents and Secrets as Read and write), save, then click the " +
+        "button again.");
+    }
+    throw e;
+  }
+
+  // Make sure the branch we just wrote is the repo's default (so Pages defaults to it).
+  try {
+    await apiWith(tok, base, { method: "PATCH", body: JSON.stringify({ default_branch: branch }) });
+  } catch (e) { /* not fatal */ }
+
+  // Remove the temporary init placeholder if it is still around.
+  try {
+    var ph = await apiWith(tok, base + "/contents/SETUP_IN_PROGRESS.md?ref=" + encodeURIComponent(branch));
+    await apiWith(tok, base + "/contents/SETUP_IN_PROGRESS.md", {
+      method: "DELETE",
+      body: JSON.stringify({ message: "Remove setup placeholder", sha: ph.sha, branch: branch })
+    });
+  } catch (e) { /* nothing to remove */ }
+
+  log("Done. " + owner + "/" + repo + " now has the " + branch + " branch and /docs folder.");
+}
+
+// Fast path: one batch commit via the Git Data API. Initializes an empty repo
+// through the Contents API first, because the Git Data API cannot create the
+// very first tree/commit on a repository that has no commits yet.
+async function seedFast(tok, base, branch, c, files, log) {
+  var parent = null, baseTree = null, initPath = null;
+  try {
+    var ref = await apiWith(tok, base + "/git/ref/heads/" + encodeURIComponent(branch));
+    parent = ref.object.sha;
+    var pc = await apiWith(tok, base + "/git/commits/" + parent);
+    baseTree = pc.tree.sha;
+  } catch (e) {
+    log("Initializing the " + branch + " branch...");
+    initPath = "SETUP_IN_PROGRESS.md";
+    var init = await apiWith(tok, base + "/contents/" + initPath, {
+      method: "PUT",
+      body: JSON.stringify({ message: "Initialize repository",
+        content: b64encode("Setting up automation..."), branch: branch })
+    });
+    parent = init.commit.sha;
+    var pc2 = await apiWith(tok, base + "/git/commits/" + parent);
+    baseTree = pc2.tree.sha;
+  }
+
+  log("Uploading " + files.length + " files...");
+  var treeItems = [];
+  for (var i = 0; i < files.length; i++) {
+    var made = await apiWith(tok, base + "/git/blobs", {
+      method: "POST", body: JSON.stringify({ content: files[i].b64, encoding: "base64" })
+    });
+    treeItems.push({ path: files[i].path, mode: files[i].mode, type: "blob", sha: made.sha });
+    if (i % 15 === 14) log("  " + (i + 1) + "/" + files.length + " files...");
+  }
+  if (initPath) treeItems.push({ path: initPath, mode: "100644", type: "blob", sha: null });
+
+  log("Building the commit...");
+  var newTree = await apiWith(tok, base + "/git/trees", {
+    method: "POST",
+    body: JSON.stringify(baseTree ? { base_tree: baseTree, tree: treeItems } : { tree: treeItems })
+  });
+  var commit = await apiWith(tok, base + "/git/commits", {
+    method: "POST",
+    body: JSON.stringify({
+      message: "Set up " + c.name + " from the template (code, workflows, dashboard)",
+      tree: newTree.sha, parents: parent ? [parent] : []
+    })
+  });
+  await apiWith(tok, base + "/git/refs/heads/" + encodeURIComponent(branch), {
+    method: "PATCH", body: JSON.stringify({ sha: commit.sha })
+  });
+}
+
+
+function wizardSteps(c) {
+  var st = wizState(c);
+  return [
+    {
+      id: "welcome",
+      title: "Connect " + c.name,
+      body: function () {
+        return "<p>This guided setup connects the company's accounts in about 20 minutes. You will need:</p>" +
+          "<ol><li>A <b>GitHub token</b> for this repository (2 minutes).</li>" +
+          "<li>A <b>Facebook Page</b> for the business and a Meta developer app (10 minutes).</li>" +
+          "<li>An <b>Instagram business account</b> linked to that Page (5 minutes).</li>" +
+          "<li>Switching on <b>GitHub Pages</b> hosting (1 minute).</li></ol>" +
+          "<p>Each step verifies itself before you move on, your progress is saved, " +
+          "and every token is made <b>long-lived or permanent</b> automatically. " +
+          "You can close this window at any time and continue later.</p>";
+      },
+      verify: null
+    },
+    {
+      id: "ghpat",
+      title: "GitHub token (GH_PAT)",
+      body: function () {
+        return "<p>This token lets the dashboard and the automation act on <b>" +
+          esc(c.owner + "/" + c.repo) + "</b>, including refreshing platform tokens forever.</p>" +
+          "<ol><li>Open <a href='https://github.com/settings/personal-access-tokens/new' target='_blank' rel='noopener'>github.com/settings/personal-access-tokens/new</a>.</li>" +
+          "<li><b>Token name:</b> " + esc(c.repo) + "-automation. <b>Expiration:</b> No expiration.</li>" +
+          "<li><b>Repository access:</b> Only select repositories, choose <b>" + esc(c.repo) + "</b>.</li>" +
+          "<li><b>Permissions:</b> Actions - Read and write; Contents - Read and write; " +
+          "Secrets - Read and write; Workflows - Read and write; Administration - Read and write.</li>" +
+          "<li>Press <b>Generate token</b> and paste it below.</li></ol>" +
+          field("wz-ghpat", "Paste the GitHub token", { masked: true, value: st.ghpat || "" }) +
+          "<p>Then also store it as a repository secret (used by the token-refresh workflow):</p>" +
+          secretRow("GH_PAT") +
+          "<p><a href='" + newSecretLink(c) + "' target='_blank' rel='noopener'>Open the New secret page</a> - name it <span class='varname'>GH_PAT</span>, paste the same token, press <b>Add secret</b>.</p>";
+      },
+      verify: function () {
+        var tok = el("wz-ghpat").value.trim();
+        if (!tok) return Promise.reject(new Error("Paste the token first."));
+        return apiWith(tok, "/repos/" + c.owner + "/" + c.repo).then(function () {
+          return apiWith(tok, "/repos/" + c.owner + "/" + c.repo + "/actions/secrets?per_page=100");
+        }).then(function (r) {
+          var st = wizState(c);
+          st.ghpat = tok;
+          saveWizState(c, st);
+          // Update the company record too, so Switch to uses it.
+          var list = companies();
+          list.forEach(function (x) { if (x.owner === c.owner && x.repo === c.repo) x.token = tok; });
+          saveCompanies(list);
+          var have = (r.secrets || []).map(function (x) { return x.name; });
+          if (have.indexOf("GH_PAT") < 0) {
+            throw new Error("Token works (repo + secrets access confirmed), but the GH_PAT " +
+              "secret is not saved in the repo yet. Add it via the link above, then verify again.");
+          }
+          return "Token verified and GH_PAT secret found.";
+        });
+      }
+    },
+    {
+      id: "facebook",
+      title: "Facebook Page connection",
+      body: function () {
+        return "<p>Posts appear on the business's <b>Facebook Page</b>; a Meta app provides the permission. " +
+          "Follow Setup Instructions sections 1-2 to create both, then enter everything here - " +
+          "the exchange to a <b>permanent, never-expiring</b> Page token happens automatically, " +
+          "and a weekly job re-derives it so it can never lapse.</p>" +
+          field("wz-fb-appid", "Meta App ID (App settings, Basic)", { value: st.fb_appid || "" }) +
+          field("wz-fb-appsecret", "Meta App Secret (App settings, Basic, press Show)", { masked: true }) +
+          field("wz-fb-usertoken", "User access token from Graph API Explorer (with pages_show_list, pages_manage_posts, pages_read_engagement)", { masked: true }) +
+          field("wz-fb-pageid", "Facebook Page ID (optional - filled automatically if found)", { value: st.fb_pageid || "" }) +
+          "<p>Press <b>Save and Verify</b>: it upgrades your token to long-lived, finds the Page, " +
+          "and shows the values to store as secrets. Store <b>all five</b> - the last three let the " +
+          "system refresh the token forever on its own:</p>" +
+          secretRow("FACEBOOK_PAGE_ID") + secretRow("FACEBOOK_PAGE_ACCESS_TOKEN") +
+          secretRow("FACEBOOK_APP_ID") + secretRow("FACEBOOK_APP_SECRET") + secretRow("FACEBOOK_USER_TOKEN") +
+          "<div id='wz-fb-result'></div>" +
+          "<p><a href='" + newSecretLink(c) + "' target='_blank' rel='noopener'>Open the New secret page</a> and add them, then verify again to confirm they are stored.</p>";
+      },
+      verify: function () {
+        var appid = el("wz-fb-appid").value.trim();
+        var appsecret = el("wz-fb-appsecret").value.trim();
+        var usertok = el("wz-fb-usertoken").value.trim();
+        var pageid = el("wz-fb-pageid").value.trim();
+        var stw = wizState(c);
+        // Phase 2: values already derived; just confirm the secrets exist.
+        if (!usertok && stw.fb_pageid) {
+          return checkSecretsExist(c, ["FACEBOOK_PAGE_ID", "FACEBOOK_PAGE_ACCESS_TOKEN",
+              "FACEBOOK_APP_ID", "FACEBOOK_APP_SECRET", "FACEBOOK_USER_TOKEN"])
+            .then(function () { return "All five Facebook secrets are stored. Page " + stw.fb_pageid +
+              " is connected and the token will refresh itself forever."; });
+        }
+        if (!appid || !appsecret || !usertok) {
+          return Promise.reject(new Error("Fill in the App ID, App Secret and user token (or complete the secrets and verify again)."));
+        }
+        var G = "https://graph.facebook.com/v21.0";
+        var longTok = "";
+        return metaGet(G + "/oauth/access_token?grant_type=fb_exchange_token&client_id=" +
+            encodeURIComponent(appid) + "&client_secret=" + encodeURIComponent(appsecret) +
+            "&fb_exchange_token=" + encodeURIComponent(usertok))
+          .then(function (ex) {
+            longTok = ex.access_token;
+            var findPage = pageid
+              ? metaGet(G + "/" + encodeURIComponent(pageid) + "?fields=access_token,name,id&access_token=" + encodeURIComponent(longTok))
+              : metaGet(G + "/me/accounts?access_token=" + encodeURIComponent(longTok)).then(function (r) {
+                  var page = (r.data || [])[0];
+                  if (!page) throw new Error("No Page found on this token. Enter the Page ID above " +
+                    "(find it in the Access Token Debugger under Granular Scopes) and verify again.");
+                  return page;
+                });
+            return findPage;
+          })
+          .then(function (page) {
+            var st2 = wizState(c);
+            st2.fb_appid = appid;
+            st2.fb_pageid = page.id;
+            saveWizState(c, st2);
+            el("wz-fb-pageid").value = page.id;
+            el("wz-fb-result").innerHTML =
+              "<p><b>Found Page: " + esc(page.name || page.id) + "</b>. Copy each value into the matching secret:</p>" +
+              "<div class='secretrow'><span class='varname'>FACEBOOK_PAGE_ID</span>" +
+              "<button class='copybtn' data-copyval='" + esc(page.id) + "'>Copy value</button></div>" +
+              "<div class='secretrow'><span class='varname'>FACEBOOK_PAGE_ACCESS_TOKEN</span>" +
+              "<button class='copybtn' data-copyval='" + esc(page.access_token) + "'>Copy value (permanent)</button></div>" +
+              "<div class='secretrow'><span class='varname'>FACEBOOK_APP_ID</span>" +
+              "<button class='copybtn' data-copyval='" + esc(appid) + "'>Copy value</button></div>" +
+              "<div class='secretrow'><span class='varname'>FACEBOOK_APP_SECRET</span>" +
+              "<button class='copybtn' data-copyval='" + esc(appsecret) + "'>Copy value</button></div>" +
+              "<div class='secretrow'><span class='varname'>FACEBOOK_USER_TOKEN</span>" +
+              "<button class='copybtn' data-copyval='" + esc(longTok) + "'>Copy value (60-day, auto-renews)</button></div>" +
+              "<p>Store all five via the New secret link below, then press Save and Verify again.</p>";
+            bindCopyButtons();
+            return "Page found and a permanent token generated. Save all five secrets " +
+              "via the link, then press Save and Verify again to confirm.";
+          });
+      }
+    },
+    {
+      id: "instagram",
+      title: "Instagram connection",
+      body: function () {
+        return "<p>The Instagram <b>business</b> account must be linked to the Facebook Page " +
+          "(Setup Instructions section 3). Then generate its token (section 4) and paste it here - " +
+          "it is upgraded to a <b>60-day token that auto-renews forever</b>.</p>" +
+          field("wz-ig-token", "Instagram access token (starts with IGAA)", { masked: true }) +
+          field("wz-ig-appsecret", "Meta App Secret (same as the Facebook step)", { masked: true }) +
+          "<p>Press <b>Save and Verify</b>: it confirms the token, upgrades it to long-lived, and finds the User ID. Store these three secrets:</p>" +
+          secretRow("INSTAGRAM_ACCESS_TOKEN") + secretRow("INSTAGRAM_USER_ID") + secretRow("INSTAGRAM_APP_SECRET") +
+          "<div id='wz-ig-result'></div>" +
+          "<p><a href='" + newSecretLink(c) + "' target='_blank' rel='noopener'>Open the New secret page</a>, add all three, then verify again to confirm.</p>";
+      },
+      verify: function () {
+        var tok = el("wz-ig-token").value.trim();
+        var secret = el("wz-ig-appsecret").value.trim();
+        var stw = wizState(c);
+        if (!tok && stw.ig_userid) {
+          return checkSecretsExist(c, ["INSTAGRAM_ACCESS_TOKEN", "INSTAGRAM_USER_ID", "INSTAGRAM_APP_SECRET"])
+            .then(function () { return "Instagram secrets are stored. Account " + stw.ig_userid + " is connected."; });
+        }
+        if (!tok) return Promise.reject(new Error("Paste the IGAA token (or complete the secrets and verify again)."));
+        var G = "https://graph.instagram.com";
+        return metaGet(G + "/me?fields=id,username&access_token=" + encodeURIComponent(tok))
+          .then(function (me) {
+            var upgrade = secret
+              ? metaGet(G + "/access_token?grant_type=ig_exchange_token&client_secret=" +
+                  encodeURIComponent(secret) + "&access_token=" + encodeURIComponent(tok))
+                .catch(function () { return { access_token: tok }; })
+              : Promise.resolve({ access_token: tok });
+            return upgrade.then(function (up) {
+              var st2 = wizState(c);
+              st2.ig_userid = me.id;
+              saveWizState(c, st2);
+              el("wz-ig-result").innerHTML =
+                "<p><b>Connected: @" + esc(me.username || "") + "</b> (User ID " + esc(me.id) + ")</p>" +
+                "<div class='secretrow'>" +
+                "<button class='copybtn' data-copyval='" + esc(up.access_token) + "'>Copy long-lived token</button>" +
+                "<button class='copybtn' data-copyval='" + esc(me.id) + "'>Copy User ID</button>" +
+                "</div>" +
+                "<p>Store the three secrets via the link below, then press Save and Verify again.</p>";
+              bindCopyButtons();
+              return "Token valid for @" + (me.username || me.id) +
+                (secret ? " and upgraded to long-lived." : ".") +
+                " Now save the secrets, then verify again to confirm.";
+            });
+          });
+      }
+    },
+    {
+      id: "pages",
+      title: "GitHub Pages hosting",
+      body: function () {
+        var url = "https://" + c.owner.toLowerCase() + ".github.io/" + c.repo + "/";
+        return "<p>This publishes the company's own dashboard (this exact app) at a web address.</p>" +
+          "<div id='wz-prep' class='status info show'>Checking that the repository has a <b>" +
+          esc(c.branch) + "</b> branch and a <b>/docs</b> folder...</div>" +
+          "<div class='btnrow' id='wz-prep-row' style='display:none;'>" +
+          "<button id='wz-prep-btn' data-tip='Copy the code, workflows and dashboard into this repo so the branch and /docs exist'>" +
+          "Create the " + esc(c.branch) + " branch and /docs folder</button></div>" +
+          "<details style='margin:10px 0;'><summary>New, empty repository? (no " + esc(c.branch) +
+          " branch or /docs folder yet)</summary>" +
+          "<p>GitHub Pages can only publish a branch and folder that already exist. A repository you " +
+          "created by hand is empty - it has no <b>" + esc(c.branch) + "</b> branch and no <b>/docs</b> " +
+          "folder, and it has none of the posting code either, so there is nothing to publish yet.</p>" +
+          "<p><b>Easiest fix:</b> press <b>Create the " + esc(c.branch) + " branch and /docs folder</b> " +
+          "above. It copies the automation code, the scheduled workflows and the dashboard into this " +
+          "repository on the <b>" + esc(c.branch) + "</b> branch (about a minute), so everything below " +
+          "then works. Your GitHub token must have the <b>Workflows</b> permission (Read and write) for " +
+          "this - it copies workflow files - so if the button reports it is not accessible, add that " +
+          "permission to the token and try again.</p>" +
+          "<p><b>Or do it by hand on GitHub:</b></p><ol>" +
+          "<li>Open the repository. If it is completely empty, press <b>Add file, Create new file</b>, " +
+          "type <code>docs/index.html</code> as the name (the <code>docs/</code> creates the folder), " +
+          "put any text in it, and <b>Commit</b> - GitHub makes the first commit on a <b>" +
+          esc(c.branch) + "</b> branch automatically.</li>" +
+          "<li>If a branch already exists but is not called <b>" + esc(c.branch) + "</b>: open the " +
+          "branch dropdown, type <b>" + esc(c.branch) + "</b>, and press <b>Create branch: " +
+          esc(c.branch) + "</b>. Then in <b>Settings, General</b> set it as the default branch.</li>" +
+          "<li>Note: a hand-made repo still will not post anything until it also has the code - the " +
+          "button above is the reliable path.</li></ol></details>" +
+          "<p>Then turn Pages on:</p>" +
+          "<ol><li>Open <a href='https://github.com/" + esc(c.owner) + "/" + esc(c.repo) +
+          "/settings/pages' target='_blank' rel='noopener'>the repository's Pages settings</a>.</li>" +
+          "<li>Under <b>Build and deployment, Source</b>, choose <b>Deploy from a branch</b>.</li>" +
+          "<li>Set <b>Branch</b> to <b>" + esc(c.branch) + "</b> and the folder to <b>/docs</b>, then <b>Save</b>.</li>" +
+          "<li>Wait about one minute.</li></ol>" +
+          "<p>The dashboard will be live at:</p>" +
+          "<div class='secretrow'><span class='varname'>" + esc(url) + "</span>" +
+          "<button class='copybtn' data-copyval='" + esc(url) + "'>Copy URL</button></div>" +
+          "<p>Open it in a new tab to confirm it loads, then press <b>Save and Verify</b>.</p>";
+      },
+      onRender: function () {
+        var prep = el("wz-prep"), row = el("wz-prep-row"), btn = el("wz-prep-btn");
+        if (!prep) return;
+        repoReadiness(c).then(function (r) {
+          if (r.ready) {
+            prep.className = "status ok show";
+            prep.innerHTML = "Ready: the <b>" + esc(c.branch) +
+              "</b> branch and <b>/docs</b> folder both exist. Turn Pages on below.";
+            row.style.display = "none";
+          } else {
+            prep.className = "status err show";
+            prep.innerHTML = (r.empty
+              ? "This repository is empty - it has no <b>" + esc(c.branch) + "</b> branch or code yet."
+              : (!r.hasBranch
+                  ? "This repository has no <b>" + esc(c.branch) + "</b> branch yet."
+                  : "The <b>" + esc(c.branch) + "</b> branch has no <b>/docs</b> folder yet.")) +
+              " Use the button below to set it up automatically.";
+            row.style.display = "";
+          }
+        }).catch(function (e) {
+          prep.className = "status err show";
+          prep.innerHTML = "Could not check the repository: " + esc(e.message) +
+            " You can still set it up with the button below.";
+          row.style.display = "";
+        });
+        if (btn) btn.onclick = function () {
+          if (!confirm("Copy the code, workflows and dashboard into " + c.owner + "/" + c.repo +
+              " on the " + c.branch + " branch? This is safe on an empty repository.")) return;
+          btn.disabled = true;
+          prep.className = "status info show";
+          prep.textContent = "";
+          seedRepoFromTemplate(c, function (line) { appendLog("wz-prep", line); })
+            .then(function () {
+              appendLog("wz-prep", "");
+              appendLog("wz-prep", "Now open the Pages settings below, pick " + c.branch +
+                " and /docs, and Save.");
+              prep.className = "status ok show";
+              row.style.display = "none";
+            })
+            .catch(function (e) {
+              appendLog("wz-prep", "FAILED: " + e.message);
+              prep.className = "status err show";
+            })
+            .then(function () { btn.disabled = false; });
+        };
+      },
+      verify: function () {
+        var st2 = wizState(c);
+        st2.pages_url = "https://" + c.owner.toLowerCase() + ".github.io/" + c.repo + "/";
+        saveWizState(c, st2);
+        return Promise.resolve("Pages URL saved to the company profile. If the page did not load yet, give it a minute and refresh.");
+      }
+    },
+    {
+      id: "done",
+      title: "All connected",
+      body: function () {
+        return "<p><b>" + esc(c.name) + " is ready. This is a set-and-forget setup.</b></p>" +
+          "<ul><li>Switch to the company (Companies section) and open <b>Auto Posts</b>.</li>" +
+          "<li>Bulk-upload a month of photos, set the month's start date and platforms, tick it, Save.</li>" +
+          "<li>From then on it runs itself, forever: feed posts and stories to Instagram and " +
+          "Facebook, unique captions, safety caps, and <b>tokens that renew themselves</b> " +
+          "(nothing expires, no yearly re-login).</li>" +
+          "<li>You never need to touch it again until you want to stop it - the Dashboard has a " +
+          "<b>Pause automation</b> button that halts everything instantly and resumes just as easily.</li>" +
+          "<li>The Dashboard's activity log shows every post and any platform errors.</li></ul>";
+      },
+      verify: null
+    }
+  ];
+}
+
+function openWizard(companyIndex) {
+  wizard.company = companies()[companyIndex];
+  wizard.steps = wizardSteps(wizard.company);
+  var st = wizState(wizard.company);
+  wizard.idx = Math.min(st.step || 0, wizard.steps.length - 1);
+  el("wizard-overlay").classList.add("show");
+  renderWizard();
+}
+
+function renderWizard() {
+  var step = wizard.steps[wizard.idx];
+  var c = wizard.company;
+  var st = wizState(c);
+  el("wz-stepno").textContent = "Step " + (wizard.idx + 1) + " of " + wizard.steps.length +
+    "  -  " + c.name;
+  el("wz-title").textContent = step.title;
+  el("wz-body").innerHTML = step.body();
+  el("wz-status").className = "status";
+  el("wz-status").textContent = "";
+  el("wz-progress").innerHTML = wizard.steps.map(function (s, i) {
+    var cls = (st.done || {})[s.id] ? "done" : (i === wizard.idx ? "cur" : "");
+    return "<span class='" + cls + "'></span>";
+  }).join("");
+  el("wz-back").style.visibility = wizard.idx === 0 ? "hidden" : "visible";
+  el("wz-verify").style.display = step.verify ? "" : "none";
+  el("wz-next").textContent = wizard.idx === wizard.steps.length - 1 ? "Finish" : "Next";
+  bindCopyButtons();
+  if (typeof step.onRender === "function") { try { step.onRender(); } catch (e) { /* non-fatal */ } }
+  var st2 = wizState(c);
+  st2.step = wizard.idx;
+  saveWizState(c, st2);
+}
+
+function bindCopyButtons() {
+  document.querySelectorAll(".copybtn").forEach(function (b) {
+    b.onclick = function () {
+      var val = b.getAttribute("data-copyval") || b.getAttribute("data-copy") || "";
+      navigator.clipboard.writeText(val).then(function () {
+        var old = b.textContent;
+        b.textContent = "Copied";
+        setTimeout(function () { b.textContent = old; }, 1200);
+      });
+    };
+  });
+}
+
+el("wz-back").onclick = function () {
+  if (wizard.idx > 0) { wizard.idx--; renderWizard(); }
+};
+el("wz-close").onclick = function () {
+  el("wizard-overlay").classList.remove("show");
+  renderCompanies();
+};
+el("wz-next").onclick = function () {
+  if (wizard.idx >= wizard.steps.length - 1) {
+    el("wizard-overlay").classList.remove("show");
+    renderCompanies();
+    return;
+  }
+  wizard.idx++;
+  renderWizard();
+};
+el("wz-verify").onclick = function () {
+  var step = wizard.steps[wizard.idx];
+  if (!step.verify) return;
+  status("wz-status", "info", "Verifying...");
+  el("wz-verify").disabled = true;
+  step.verify().then(function (msg) {
+    var st = wizState(wizard.company);
+    st.done = st.done || {};
+    st.done[step.id] = true;
+    saveWizState(wizard.company, st);
+    status("wz-status", "ok", msg || "Verified.");
+    renderWizardProgressOnly();
+  }).catch(function (e) {
+    status("wz-status", "err", e.message);
+  }).then(function () {
+    el("wz-verify").disabled = false;
+  });
+};
+
+function renderWizardProgressOnly() {
+  var st = wizState(wizard.company);
+  el("wz-progress").innerHTML = wizard.steps.map(function (s, i) {
+    var cls = (st.done || {})[s.id] ? "done" : (i === wizard.idx ? "cur" : "");
+    return "<span class='" + cls + "'></span>";
+  }).join("");
+}
+
+// ---- Init ----
+loadSettings();
+if (companies().length) el("nc-owner").value = companies()[0].owner;
+route();
+if (!settings().token) {
+  location.hash = "#settings";
+  route();
+  status("setup-status", "info", "Enter a GitHub token and Save to begin, or pick a company under Companies.");
+}
+</script>
+</body>
+</html>
