@@ -1170,7 +1170,8 @@
       "caption": "",
       "scheduled_at": "2026-07-14T16:00:00+00:00",
       "status": "pending",
-      "attempts": 0
+      "attempts": 1,
+      "last_error": "Instagram publish error: The requested resource does not exist"
     },
     {
       "id": "content_lswposts_month-1-day-9_feed_bulk-1783435884930-8-p0",
