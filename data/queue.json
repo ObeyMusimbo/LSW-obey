@@ -1397,8 +1397,12 @@
       ],
       "caption": "",
       "scheduled_at": "2026-07-16T12:00:00+00:00",
-      "status": "pending",
-      "attempts": 0
+      "status": "posted",
+      "attempts": 0,
+      "post_id": "18089221565636046",
+      "ig_post_id": "18089221565636046",
+      "posted_at": "2026-07-16T12:53:25+00:00",
+      "fb_post_id": "1604722334553869"
     },
     {
       "id": "content_lswposts_month-1-day-10_story_bulk-1783435884930-9-s2",
