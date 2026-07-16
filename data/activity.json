@@ -1,6 +1,22 @@
 {
   "entries": [
     {
+      "at": "2026-07-16T06:35:18+00:00",
+      "item": "content_lswposts_month-1-day-10_feed_bulk-1783435884930-9-p0",
+      "platform": "facebook",
+      "kind": "image",
+      "ok": false,
+      "error": "Facebook API error: Please reduce the amount of data you're asking for, then retry your request"
+    },
+    {
+      "at": "2026-07-16T06:35:18+00:00",
+      "item": "content_lswposts_month-1-day-10_feed_bulk-1783435884930-9-p0",
+      "platform": "instagram",
+      "kind": "image",
+      "ok": true,
+      "post_id": "18024819842852159"
+    },
+    {
       "at": "2026-07-15T17:20:42+00:00",
       "item": "content_lswposts_month-1-day-9_story_bulk-1783435884930-8-s2",
       "platform": "facebook",
