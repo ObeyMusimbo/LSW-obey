@@ -1751,7 +1751,8 @@
       "caption": "",
       "scheduled_at": "2026-07-19T08:00:00+00:00",
       "status": "pending",
-      "attempts": 0
+      "attempts": 1,
+      "last_error": "Instagram container error: An unknown error occurred"
     },
     {
       "id": "content_lswposts_month-1-day-13_story_bulk-1783435884930-12-s1",
