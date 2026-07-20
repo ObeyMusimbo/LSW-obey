@@ -1,15 +1,630 @@
 {
-  "generated_at": "2026-07-13T10:32:40+00:00",
+  "generated_at": "2026-07-20T10:18:02+00:00",
   "totals": {
-    "posts": 45,
+    "posts": 87,
     "instagram": {
-      "likes": 2,
-      "comments": 1,
-      "reach": 1
+      "likes": 4,
+      "comments": 3,
+      "reach": 4
     },
     "facebook": {}
   },
   "items": [
+    {
+      "id": "content_lswposts_month-1-day-14_feed_bulk-1783435884930-13-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-20T07:30:31+00:00",
+      "caption": "Furniture makers, carpenters, contractors: bring us your cutting list and walk out project-ready. Boards, tops, edging and hardware in one s",
+      "instagram": {
+        "post_id": "18073378334349481",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111964369379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_story_bulk-1783435884930-12-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-19T16:27:24+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17947430607226444",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1537758004747287"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_feed_bulk-1783435884930-12-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-19T14:13:08+00:00",
+      "caption": "A great finish starts with great fittings. Durable hinges, reliable runners and top-quality handles, all under one roof.\n\nDM us your cutting",
+      "instagram": {
+        "post_id": "18160491988479026",
+        "likes": 1,
+        "comments": 1,
+        "reach": 1
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111793339379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_story_bulk-1783435884930-12-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-19T12:38:45+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18110079100965138",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1572064350976818"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_feed_bulk-1783435884930-12-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-19T10:37:19+00:00",
+      "caption": "From a single shelf to a full kitchen fit-out, the recipe never changes: quality boards, accurate cuts, dependable fittings.\n\nVisit our stor",
+      "instagram": {
+        "post_id": "18303628318304973",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111756493379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_story_bulk-1783435884930-12-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-19T10:37:19+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17971390419094532",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1921066418580178"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-13_feed_bulk-1783435884930-12-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-19T06:16:10+00:00",
+      "caption": "Quality boards and fittings are not an expense, they are a saving. Build it right once and it serves you for decades.\n\nVisit our store or me",
+      "instagram": {
+        "post_id": "18095773346614992",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111721381379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_story_bulk-1783435884930-11-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-18T16:37:34+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18117981262869038"
+      },
+      "facebook": {
+        "post_id": "2084094749166205"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_feed_bulk-1783435884930-11-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-18T14:34:50+00:00",
+      "caption": "Your design, our boards. From high-gloss modern to warm woodgrain, we stock the colours and finishes that bring ideas to life.\n\nCome see the",
+      "instagram": {
+        "post_id": "18040687376619660",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111567481379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_story_bulk-1783435884930-11-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-18T13:23:07+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17937462432331166"
+      },
+      "facebook": {
+        "post_id": "1380467790887546"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_feed_bulk-1783435884930-11-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-18T10:49:56+00:00",
+      "caption": "Soft-close hinges, smooth runners, handles that feel right in the hand. The details you touch every day deserve the best fittings.\n\nMessage ",
+      "instagram": {
+        "post_id": "18125086129779478",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111520219379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_story_bulk-1783435884930-11-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-18T09:41:42+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18105016922321189"
+      },
+      "facebook": {
+        "post_id": "955495144179825"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-12_feed_bulk-1783435884930-11-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-18T07:57:28+00:00",
+      "caption": "Colour boards for personality. Gloss boards for shine. Precision tops for the perfect work surface. What are you building next?\n\nDM us your ",
+      "instagram": {
+        "post_id": "18068642789443126",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111474013379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_story_bulk-1783435884930-10-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-17T17:19:02+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18111485549317907"
+      },
+      "facebook": {
+        "post_id": "1548241240129969"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_feed_bulk-1783435884930-10-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-17T14:16:54+00:00",
+      "caption": "Strong boards. Clean edges. Hardware that lasts. Everything your next project needs, backed by 25 years of experience.\n\nCome see the range f",
+      "instagram": {
+        "post_id": "18133204183716928",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111290137379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_story_bulk-1783435884930-10-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-17T12:36:46+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17934066651342167"
+      },
+      "facebook": {
+        "post_id": "1680052006559072"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_feed_bulk-1783435884930-10-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-17T11:06:03+00:00",
+      "caption": "The difference between good and great furniture is measured in millimetres. We cut, edge and supply to exact measurements.\n\nVisit us or send",
+      "instagram": {
+        "post_id": "18047909600581562",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111245767379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_story_bulk-1783435884930-10-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-17T09:16:52+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18021726551688356"
+      },
+      "facebook": {
+        "post_id": "1012965261643003"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-11_feed_bulk-1783435884930-10-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-17T06:58:31+00:00",
+      "caption": "Building a kitchen, a wardrobe or a full shop fit? Start with boards cut right the first time. Precision cutting is our specialty.\n\nVisit us",
+      "instagram": {
+        "post_id": "18100841659936166",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111181555379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_story_bulk-1783435884930-9-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-16T16:42:32+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18089499497414826"
+      },
+      "facebook": {
+        "post_id": "1531132398002805"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_feed_bulk-1783435884930-9-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-16T15:05:07+00:00",
+      "caption": "25 years in boards and fittings taught us one thing: the finish you admire is only as good as the hardware behind it.\n\nVisit our store or me",
+      "instagram": {
+        "post_id": "18371440222237716",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122111021901379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_story_bulk-1783435884930-9-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-16T12:53:25+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18089221565636046"
+      },
+      "facebook": {
+        "post_id": "1604722334553869"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_feed_bulk-1783435884930-9-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-16T11:12:52+00:00",
+      "caption": "Gloss boards, colour boards and precision tops. Pick the finish, we make sure it arrives cut to size and edged to perfection.\n\nGet in touch ",
+      "instagram": {
+        "post_id": "18336693544270335",
+        "likes": 0,
+        "comments": 0,
+        "reach": 1
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110938897379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_story_bulk-1783435884930-9-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-16T09:03:40+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18186097456385095"
+      },
+      "facebook": {
+        "post_id": "37110806088534013"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-10_feed_bulk-1783435884930-9-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-16T06:35:18+00:00",
+      "caption": "Furniture makers, carpenters, contractors: bring us your cutting list and walk out project-ready. Boards, tops, edging and hardware in one s",
+      "instagram": {
+        "post_id": "18024819842852159",
+        "likes": 1,
+        "comments": 1,
+        "reach": 1
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_story_bulk-1783435884930-8-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-15T17:20:42+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17896718406352052"
+      },
+      "facebook": {
+        "post_id": "1320294213605454"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_feed_bulk-1783435884930-8-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-15T14:10:50+00:00",
+      "caption": "Building a kitchen, a wardrobe or a full shop fit? Start with boards cut right the first time. Precision cutting is our specialty.\n\nGet in t",
+      "instagram": {
+        "post_id": "18108391367282598",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110700733379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_story_bulk-1783435884930-8-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-15T12:03:30+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "17860810581662484"
+      },
+      "facebook": {
+        "post_id": "3944175139221672"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_feed_bulk-1783435884930-8-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-15T10:29:00+00:00",
+      "caption": "25 years in boards and fittings taught us one thing: the finish you admire is only as good as the hardware behind it.\n\nSend us a message and",
+      "instagram": {
+        "post_id": "18109445899886182",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110655397379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_feed_bulk-1783435884930-8-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-15T08:31:10+00:00",
+      "caption": "Dream kitchens are built one precise cut at a time. We handle the cutting and edge banding so your build goes together perfectly.\n\nSend us a",
+      "instagram": {
+        "post_id": "17999228426973521",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110625463379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-9_story_bulk-1783435884930-8-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-15T08:31:10+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18171540394376385"
+      },
+      "facebook": {
+        "post_id": "1570836824552262"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_story_bulk-1783435884930-7-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-14T19:43:57+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18109429231972348"
+      },
+      "facebook": {
+        "post_id": "1554403296139278"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_feed_bulk-1783435884930-7-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-14T15:27:41+00:00",
+      "caption": "Gloss boards, colour boards and precision tops. Pick the finish, we make sure it arrives cut to size and edged to perfection.\n\nDM us your cu",
+      "instagram": {
+        "post_id": "18050958332572132",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110403673379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_story_bulk-1783435884930-7-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-14T13:56:32+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18270962845293230"
+      },
+      "facebook": {
+        "post_id": "916339610836670"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_feed_bulk-1783435884930-7-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-14T10:18:00+00:00",
+      "caption": "Soft-close hinges, smooth runners, handles that feel right in the hand. The details you touch every day deserve the best fittings.\n\nGet in t",
+      "instagram": {
+        "post_id": "17936640681311869",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110270983379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_feed_bulk-1783435884930-7-p0",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-14T08:22:57+00:00",
+      "caption": "Your design, our boards. From high-gloss modern to warm woodgrain, we stock the colours and finishes that bring ideas to life.\n\nSend us a me",
+      "instagram": {
+        "post_id": "18131269225541652",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122110210599379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-8_story_bulk-1783435884930-7-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-14T08:22:57+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18137035849602531"
+      },
+      "facebook": {
+        "post_id": "4346324572298515"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-7_story_bulk-1783435884930-6-s2",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-13T18:02:17+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18124562251670629"
+      },
+      "facebook": {
+        "post_id": "1069964995432275"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-7_feed_bulk-1783435884930-6-p2",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-13T15:58:11+00:00",
+      "caption": "A great finish starts with great fittings. Durable hinges, reliable runners and top-quality handles, all under one roof.\n\nGet in touch today",
+      "instagram": {
+        "post_id": "17975688243061216",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122109931317379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-7_story_bulk-1783435884930-6-s1",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-13T13:06:35+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18150771790507290"
+      },
+      "facebook": {
+        "post_id": "1409769271251877"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-7_feed_bulk-1783435884930-6-p1",
+      "campaign": "LSWposts",
+      "post_type": "feed",
+      "posted_at": "2026-07-13T10:34:02+00:00",
+      "caption": "A kitchen this clean starts below the surface: quality boards, precise cuts and fittings that hold their line for years. That is what we sup",
+      "instagram": {
+        "post_id": "18187892836379420",
+        "likes": 0,
+        "comments": 0,
+        "reach": 0
+      },
+      "facebook": {
+        "post_id": "1335681619620994_122109817779379104"
+      }
+    },
+    {
+      "id": "content_lswposts_month-1-day-7_story_bulk-1783435884930-6-s0",
+      "campaign": "LSWposts",
+      "post_type": "story",
+      "posted_at": "2026-07-13T10:34:02+00:00",
+      "caption": "",
+      "instagram": {
+        "post_id": "18069883517415044"
+      },
+      "facebook": {
+        "post_id": "4537960979781464"
+      }
+    },
     {
       "id": "content_lswposts_month-1-day-7_feed_bulk-1783435884930-6-p0",
       "campaign": "LSWposts",
@@ -33,10 +648,7 @@
       "posted_at": "2026-07-12T16:36:29+00:00",
       "caption": "",
       "instagram": {
-        "post_id": "18042550907802801",
-        "likes": 0,
-        "comments": 0,
-        "reach": 0
+        "post_id": "18042550907802801"
       },
       "facebook": {
         "post_id": "1545346670709481"
@@ -65,10 +677,7 @@
       "posted_at": "2026-07-12T12:41:52+00:00",
       "caption": "",
       "instagram": {
-        "post_id": "17967500456935237",
-        "likes": 0,
-        "comments": 0,
-        "reach": 0
+        "post_id": "17967500456935237"
       },
       "facebook": {
         "post_id": "27506725318980924"
