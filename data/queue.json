@@ -2028,8 +2028,12 @@
       ],
       "caption": "",
       "scheduled_at": "2026-07-21T12:00:00+00:00",
-      "status": "pending",
-      "attempts": 0
+      "status": "posted",
+      "attempts": 0,
+      "post_id": "18148235569517941",
+      "ig_post_id": "18148235569517941",
+      "posted_at": "2026-07-21T12:01:09+00:00",
+      "fb_post_id": "2116465889304013"
     },
     {
       "id": "content_lswposts_month-1-day-15_story_bulk-1783435884930-14-s2",
